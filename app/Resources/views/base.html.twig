@@ -1,13 +1,22 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8" />
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
-    </body>
+<head>
+    <meta charset="UTF-8" />
+    <title>{% block pageTitle %}{% endblock %}</title>
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+
+<ul>
+    <li><a href="/">Home</a></li>
+    <li><a href="/recipes">Recipes</a></li>
+    <li><a href="/searchUser">Search User</a></li>
+    <li><a href="/login">Login</a></li>
+</ul>
+
+
+{% block body %}
+{% endblock %}
+{% block javascripts %}{% endblock %}
+</body>
 </html>

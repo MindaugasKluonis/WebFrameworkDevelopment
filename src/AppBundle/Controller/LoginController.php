@@ -6,17 +6,17 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
-class DefaultController extends Controller
+class LoginController extends Controller
 {
     /**
-     * @Route("/", name="homepage")
+     * @Route("/login", name="loginPage")
      */
-    public function indexAction(Request $request)
+    public function loginPageAction(Request $request)
     {
         $argsArray = [
             'name' => 'matt'
         ];
-        $templateName = 'index';
+        $templateName = 'login';
         return $this->render($templateName. '.html.twig', $argsArray);
     }
 }
