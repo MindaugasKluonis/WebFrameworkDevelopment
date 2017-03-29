@@ -5,4 +5,18 @@
 {% block body %}
 
     <h1>Home Page</h1>
+
+        {{ dump() }}
+        <ul>
+            {% for recipe in recipes %}
+                <li>
+                    id = {{ recipe.id }}
+                    <br>
+                    title = {{ recipe.title }}
+                </li>
+            {% endfor %}
+        </ul>
+
+
+
 {% endblock %}

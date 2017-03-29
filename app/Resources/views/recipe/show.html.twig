@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block pageTitle %}{{ recipe.title }}{% endblock %}
+
+{% block body %}
+
+    <h1>Show one recipe</h1>
+
+    {{ dump() }}
+
+    <p>Title: {{ recipe.title }}</p>
+    <p>Author: {{ recipe.author }}</p>
+
+
+
+{% endblock %}

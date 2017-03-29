@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Recipe;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,8 +14,13 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
+
+        $recipeRepository = $repository = $this->getDoctrine()->getRepository('AppBundle:Recipe');
+
+        $recipes = $repository ->findAll();
+
         $argsArray = [
-            'name' => 'matt'
+            'recipes' => $recipes
         ];
         $templateName = 'index';
         return $this->render($templateName. '.html.twig', $argsArray);

@@ -11,7 +11,7 @@ class SearchUserController extends Controller
     /**
      * @Route("/searchUser", name="searchUserPage")
      */
-    public function loginPageAction(Request $request)
+    public function searchUserPageAction(Request $request)
     {
         $argsArray = [
             'name' => 'matt'
