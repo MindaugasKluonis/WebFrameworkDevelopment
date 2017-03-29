@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8" />
     <title>{% block pageTitle %}{% endblock %}</title>
-    {% block stylesheets %}{% endblock %}
+
+    <style>
+        @import '/css/flash.css';
+    </style>
+    {% block stylesheets %}
+    {% endblock %}
 </head>
 <body>
 

@@ -12,7 +12,10 @@
                 <li>
                     id = {{ recipe.id }}
                     <br>
-                    title = {{ recipe.title }}
+                    <a href="{{ path('showOneRecipePage' , {title:recipe.title})}}">
+                        title: {{ recipe.title }}
+                    </a>
+
                 </li>
             {% endfor %}
         </ul>

@@ -46,28 +46,57 @@ class RecipesController extends Controller
     }
 
     /**
-     * @Route("/recipes/create/{name}", name="recipesCreatePage")
+     * @Route("/recipe/processNewRecipe ", name="recipesCreateRecipe")
      */
-    public function createRecipeAction($name){
+    public function createRecipeAction(Request $request){
 
+
+        if(empty($request->request->get('title'))){
+            $this->addFlash(
+                'error',
+                'student name cannot be an empty string'
+            );
+            // forward this to the createAction() method
+            return $this->createNewRecipeAction($request);
+        }
 
         $recipe = new Recipe();
-        $recipe-> setTitle($name);
-        $recipe-> setAuthor("Admin");
-        $recipe-> setIngredients("asd");
-        $recipe-> setSteps("empty");
-        $recipe-> setSummary("Summary");
+        $recipe-> setTitle($request->request->get('title'));
+        $recipe-> setAuthor('Minde');
+        $recipe-> setIngredients($request->request->get('ingredients'));
+        $recipe-> setSteps($request->request->get('steps'));
+        $recipe-> setSummary($request->request->get('summary'));
 
-        // entity manager
+
+        //entity manager
         $em = $this->getDoctrine()->getManager();
 
-        // tells Doctrine you want to (eventually) save the Product (no queries yet)
+        //tells Doctrine you want to (eventually) save the Product (no queries yet)
         $em->persist($recipe);
 
-        // actually executes the queries (i.e. the INSERT query)
+        //actually executes the queries (i.e. the INSERT query)
         $em->flush();
 
-        return new Response('Created new recipe with named: '.$recipe->getTitle());
+        return new Response('Created new recipe');
+
+    }
+
+    /**
+     * @Route("/recipes/create/new", name="recipesCreateNewPage")
+     */
+    public function createNewRecipeAction(Request $request){
+
+
+
+
+        $argsArray = [
+
+        ];
+
+        $templateName = 'recipe/recipeCreation';
+        return $this->render($templateName. '.html.twig', $argsArray);
+
+
 
     }
 }
