@@ -12,11 +12,30 @@
 </head>
 <body>
 
+{% set username = app.session.get('username') %}
+{% set role = app.session.get('role') %}
+
+{% if username is null %}
+    No username session
+{% endif %}
+
+{% if role is null %}
+    No role session
+{% endif %}
+
 <ul>
     <li><a href="/">Home</a></li>
     <li><a href="/recipes">Recipes</a></li>
     <li><a href="/searchUser">Search User</a></li>
-    <li><a href="/login">Login</a></li>
+
+    {% if username is null %}
+        <li><a href="/login">Login</a></li>
+    {% endif %}
+
+    {% if username is not null %}
+        <li><a href="/logout">Logout</a></li>
+    {% endif %}
+
 </ul>
 
 

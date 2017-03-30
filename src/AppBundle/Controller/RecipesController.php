@@ -87,14 +87,8 @@ class RecipesController extends Controller
     public function createNewRecipeAction(Request $request){
 
 
-
-
-        $argsArray = [
-
-        ];
-
         $templateName = 'recipe/recipeCreation';
-        return $this->render($templateName. '.html.twig', $argsArray);
+        return $this->render($templateName. '.html.twig');
 
 
 

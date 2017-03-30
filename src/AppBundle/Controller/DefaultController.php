@@ -12,7 +12,7 @@ class DefaultController extends Controller
     /**
      * @Route("/", name="homepage")
      */
-    public function indexAction(Request $request)
+    public function indexAction()
     {
 
         $recipeRepository = $repository = $this->getDoctrine()->getRepository('AppBundle:Recipe');
@@ -25,4 +25,5 @@ class DefaultController extends Controller
         $templateName = 'index';
         return $this->render($templateName. '.html.twig', $argsArray);
     }
+
 }
