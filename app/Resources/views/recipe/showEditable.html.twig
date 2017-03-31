@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block pageTitle %}Home Page{% endblock %}
+
+{% block body %}
+
+
+
+<h1>Edit Page</h1>
+
+{{ dump() }}
+<ul>
+    {% for recipe in recipes %}
+        <li>
+            <a href="{{ path('editRecipePage' , {id:recipe.id})}}">
+                title: {{ recipe.title }}
+            </a>
+
+        </li>
+    {% endfor %}
+</ul>
+
+
+
+{% endblock %}

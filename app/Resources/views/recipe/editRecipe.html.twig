@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block pageTitle %}{% endblock %}
+
+{% block body %}
+
+    <h1>Edit one recipe</h1>
+
+    {{ dump() }}
+
+    {% for recipe in recipes %}
+        <form action="/recipe/edit/new" method="POST">
+
+            <input type="hidden" name ="id" value="{{ recipe.id }}">
+
+            <p>
+                <input type="text" name="title" value="{{ recipe.title }}">
+            </p>
+
+            <p>
+                <textarea  rows="6" cols="50" name="summary">{{ recipe.summary }}</textarea>
+            </p>
+
+            <p>
+                <textarea rows="6" cols="50" name="steps">{{ recipe.steps }}</textarea>
+            </p>
+
+            <p>
+                <textarea rows="6" cols="50" name="ingredients">{{ recipe.ingredients }}</textarea>
+            </p>
+
+            <p>
+                <input type="submit" value="Edit recipe">
+            </p>
+        </form>
+    {% endfor %}
+
+
+
+{% endblock %}

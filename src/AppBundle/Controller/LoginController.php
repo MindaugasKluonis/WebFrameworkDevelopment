@@ -78,11 +78,16 @@ class LoginController extends Controller
         $session ->set('role', $user -> getRole());
 
 
-        $argsArray = [
 
-        ];
-
-        return $this->forward('AppBundle:Default:index');
+        return $this -> profileAction();
 
     }
+
+    public function profileAction(){
+
+        $templateName = 'users/profile';
+        return $this->redirect('/profile');
+
+    }
+
 }

@@ -38,7 +38,7 @@ class LogoutController extends Controller
 
         $session -> clear();
 
-        return $this->forward('AppBundle:Default:index');
+        return $this->redirect('/');
 
 
     }
