@@ -45,6 +45,13 @@ class Recipe
     private $author;
 
     /**
+     * @ORM\Column(type="string", length=100)
+     */
+    private $collection;
+
+
+
+    /**
      * Get id
      *
      * @return integer
@@ -172,5 +179,29 @@ class Recipe
     public function getAuthor()
     {
         return $this->author;
+    }
+
+    /**
+     * Set collection
+     *
+     * @param string $collection
+     *
+     * @return Recipe
+     */
+    public function setCollection($collection)
+    {
+        $this->collection = $collection;
+
+        return $this;
+    }
+
+    /**
+     * Get collection
+     *
+     * @return string
+     */
+    public function getCollection()
+    {
+        return $this->collection;
     }
 }

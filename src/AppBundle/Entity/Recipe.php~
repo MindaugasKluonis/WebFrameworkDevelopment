@@ -43,4 +43,11 @@ class Recipe
      * @ORM\Column(type="string", length=100)
      */
     private $author;
+
+    /**
+     * @ORM\Column(type="string", length=100)
+     */
+    private $collection;
+
+
 }

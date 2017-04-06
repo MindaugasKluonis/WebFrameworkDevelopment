@@ -66,6 +66,7 @@ class UserController extends Controller
         $recipe-> setIngredients($request->request->get('ingredients'));
         $recipe-> setSteps($request->request->get('steps'));
         $recipe-> setSummary($request->request->get('summary'));
+        $recipe-> setCollection($request->request->get('collection'));
 
 
         //entity manager
@@ -91,8 +92,19 @@ class UserController extends Controller
      */
     public function createNewRecipeAction(Request $request){
 
+        $session = new Session();
+
+        $repository = $this->getDoctrine()->getRepository('AppBundle:RecipeCollection');
+
+        $collection = $repository ->findByAuthor($session -> get('username'));
+
+        $argsArray = [
+            'collections' => $collection
+        ];
+
+
         $templateName = 'recipe/recipeCreation';
-        return $this->render($templateName. '.html.twig');
+        return $this->render($templateName. '.html.twig', $argsArray);
 
     }
 
