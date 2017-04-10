@@ -134,8 +134,12 @@ class UserController extends Controller
     public function editRecipeAction($id)
     {
 
+        $session = new Session();
+
         $em = $this->getDoctrine()->getManager();
         $recipes = $em->getRepository('AppBundle:Recipe')->findById($id);
+
+        $collection = $em->getRepository('AppBundle:RecipeCollection')->findByAuthor($session -> get('username'));
 
         if (!$recipes) {
             throw $this->createNotFoundException(
@@ -143,7 +147,8 @@ class UserController extends Controller
             );
         }
         $argsArray = [
-            'recipes' => $recipes
+            'recipes' => $recipes,
+            'collections' => $collection
         ];
 
         $templateName = 'recipe/editRecipe';
@@ -176,6 +181,7 @@ class UserController extends Controller
         $recipe-> setIngredients($request->request->get('ingredients'));
         $recipe-> setSteps($request->request->get('steps'));
         $recipe-> setSummary($request->request->get('summary'));
+        $recipe-> setCollection($request->request->get('collection'));
 
 
 //      tells Doctrine you want to (eventually) save the Product (no queries yet)

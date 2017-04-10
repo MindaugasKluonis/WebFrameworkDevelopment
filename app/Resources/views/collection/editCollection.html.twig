@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block pageTitle %}Collections{% endblock %}
+
+{% block body %}
+
+    <h1>Edit collections</h1>
+
+    {% for flash_message in app.session.flashBag.get('error') %}
+        <div class="flash-error">
+            {{ flash_message }}
+        </div>
+    {% endfor %}
+
+    {{ dump() }}
+
+    <form action="/collection/editCollection" method="POST">
+
+        <input type="hidden" name ="id" value="{{ collection.id }}">
+
+        Recipe title:
+        <p>
+            Collection Name:<br><input type="text" name="name" value="{{ collection.name }}">
+        </p>
+
+        <p>
+            Collection description:<br><textarea  rows="6" cols="50" name="description">{{ collection.description }}</textarea>
+        </p>
+
+        <p>
+            <input type="submit" value="Edit collection">
+        </p>
+    </form>
+
+{% endblock %}

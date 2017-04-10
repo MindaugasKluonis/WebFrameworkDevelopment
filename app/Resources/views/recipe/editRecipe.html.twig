@@ -29,9 +29,30 @@
                 <textarea rows="6" cols="50" name="ingredients">{{ recipe.ingredients }}</textarea>
             </p>
 
+            <select name="collection">
+                {% if recipe.collection == false %}
+                    <option value="" selected></option>
+                {% else %}
+                    <option value=""></option>
+                {% endif %}
+
+                {% for collect in collections %}
+
+                    {% if recipe.collection == collect.name %}
+                        <option value="{{ collect.name }}" selected>{{ collect.name }}</option>
+
+                    {% else %}
+                        <option value="{{ collect.name }}">{{ collect.name }}</option>
+                    {% endif %}
+
+                {% endfor %}
+            </select>
+
             <p>
                 <input type="submit" value="Edit recipe">
             </p>
+
+
         </form>
     {% endfor %}
 
