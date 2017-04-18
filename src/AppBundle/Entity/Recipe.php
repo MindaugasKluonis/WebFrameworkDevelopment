@@ -2,15 +2,16 @@
 
 namespace AppBundle\Entity;
 
+
+
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity
- * @ORM\Table(name="recipes")
+ * @ORM\Table(name="recipe")
  */
-
 class Recipe
 {
-
 
     /**
      * @ORM\Column(type="integer")
@@ -18,7 +19,6 @@ class Recipe
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
     /**
      * @ORM\Column(type="string", length=100)
      */
@@ -30,14 +30,21 @@ class Recipe
     private $summary;
 
     /**
-     * @ORM\Column(type="string", length=200)
+     * @ORM\Column(type="string", length=100)
+     */
+    private $ingredients;
+
+    /**
+     * @ORM\Column(type="string", length=100)
      */
     private $steps;
 
     /**
-     * @ORM\Column(type="string", length=300)
+     *
+     * @ORM\ManyToOne(targetEntity="Collection", inversedBy="recipes")
+     * @ORM\JoinColumn(name="collection_id", referencedColumnName="id")
      */
-    private $ingredients;
+    private $collection;
 
     /**
      * @ORM\Column(type="string", length=100)
@@ -45,11 +52,18 @@ class Recipe
     private $author;
 
     /**
-     * @ORM\Column(type="string", length=100)
+     * @ORM\ManyToMany(targetEntity="\AppBundle\Entity\Tag")
      */
-    private $collection;
+    private $tags;
 
 
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->tags = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * Get id
@@ -110,30 +124,6 @@ class Recipe
     }
 
     /**
-     * Set steps
-     *
-     * @param string $steps
-     *
-     * @return Recipe
-     */
-    public function setSteps($steps)
-    {
-        $this->steps = $steps;
-
-        return $this;
-    }
-
-    /**
-     * Get steps
-     *
-     * @return string
-     */
-    public function getSteps()
-    {
-        return $this->steps;
-    }
-
-    /**
      * Set ingredients
      *
      * @param string $ingredients
@@ -155,6 +145,30 @@ class Recipe
     public function getIngredients()
     {
         return $this->ingredients;
+    }
+
+    /**
+     * Set steps
+     *
+     * @param string $steps
+     *
+     * @return Recipe
+     */
+    public function setSteps($steps)
+    {
+        $this->steps = $steps;
+
+        return $this;
+    }
+
+    /**
+     * Get steps
+     *
+     * @return string
+     */
+    public function getSteps()
+    {
+        return $this->steps;
     }
 
     /**
@@ -184,11 +198,11 @@ class Recipe
     /**
      * Set collection
      *
-     * @param string $collection
+     * @param \AppBundle\Entity\Collection $collection
      *
      * @return Recipe
      */
-    public function setCollection($collection)
+    public function setCollection(\AppBundle\Entity\Collection $collection = null)
     {
         $this->collection = $collection;
 
@@ -198,10 +212,44 @@ class Recipe
     /**
      * Get collection
      *
-     * @return string
+     * @return \AppBundle\Entity\Collection
      */
     public function getCollection()
     {
         return $this->collection;
+    }
+
+    /**
+     * Add tag
+     *
+     * @param \AppBundle\Entity\Tag $tag
+     *
+     * @return Recipe
+     */
+    public function addTag(\AppBundle\Entity\Tag $tag)
+    {
+        $this->tags[] = $tag;
+
+        return $this;
+    }
+
+    /**
+     * Remove tag
+     *
+     * @param \AppBundle\Entity\Tag $tag
+     */
+    public function removeTag(\AppBundle\Entity\Tag $tag)
+    {
+        $this->tags->removeElement($tag);
+    }
+
+    /**
+     * Get tags
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getTags()
+    {
+        return $this->tags;
     }
 }

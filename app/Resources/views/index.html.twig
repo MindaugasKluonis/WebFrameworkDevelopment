@@ -13,18 +13,6 @@
     <h1>Home Page</h1>
 
         {{ dump() }}
-        <ul>
-            {% for recipe in recipes %}
-                <li>
-                    id = {{ recipe.id }}
-                    <br>
-                    <a href="{{ path('showOneRecipePage' , {title:recipe.title})}}">
-                        title: {{ recipe.title }}
-                    </a>
-
-                </li>
-            {% endfor %}
-        </ul>
 
 
 

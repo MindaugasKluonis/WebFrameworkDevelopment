@@ -15,12 +15,8 @@ class DefaultController extends Controller
     public function indexAction()
     {
 
-        $recipeRepository = $repository = $this->getDoctrine()->getRepository('AppBundle:Recipe');
-
-        $recipes = $repository ->findAll();
-
         $argsArray = [
-            'recipes' => $recipes
+
         ];
         $templateName = 'index';
         return $this->render($templateName. '.html.twig', $argsArray);

@@ -2,154 +2,135 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\Recipe;
-use AppBundle\Entity\RecipeCollection;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use AppBundle\Entity\Collection;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\Ldap\Adapter\ExtLdap\Collection;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Collection controller.
+ *
+ * @Route("collection")
+ */
 class CollectionController extends Controller
 {
     /**
-     * @Route("/collection", name="collectionPage")
+     * Lists all collection entities.
+     *
+     * @Route("/", name="collection_index")
+     * @Method("GET")
      */
-    public function collectionAction()
+    public function indexAction()
     {
-
-        $session = new Session();
-
         $em = $this->getDoctrine()->getManager();
-        $collection = $em->getRepository('AppBundle:RecipeCollection')->findByAuthor($session -> get('username'));
 
-        $argsArray = [
-            'collections' => $collection
-        ];
+        $collections = $em->getRepository('AppBundle:Collection')->findAll();
 
-
-        $templateName = 'collection/collection';
-        return $this->render($templateName. '.html.twig',$argsArray);
-
+        return $this->render('collection/index.html.twig', array(
+            'collections' => $collections,
+        ));
     }
 
     /**
-     * @Route("/collection/create", name="collectionCreatePage")
+     * Creates a new collection entity.
+     *
+     * @Route("/new", name="collection_new")
+     * @Method({"GET", "POST"})
      */
-    public function createCollectionAction(Request $request){
+    public function newAction(Request $request)
+    {
+        $collection = new Collection();
+        $form = $this->createForm('AppBundle\Form\CollectionType', $collection);
+        $form->handleRequest($request);
 
-        $templateName = 'collection/createCollection';
-        return $this->render($templateName. '.html.twig');
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($collection);
+            $em->flush();
 
-
-    }
-
-    /**
-     * @Route("/collection/createNewCollection", name="processNewCollection")
-     */
-    public function processCollectionCollectionAction(Request $request){
-
-        if(empty($request->request->get('name'))){
-            $this->addFlash(
-                'error',
-                'collection name cannot be an empty string'
-            );
-            // forward this to the createAction() method
-            return $this->redirect('/collection/create');
+            return $this->redirectToRoute('collection_show', array('id' => $collection->getId()));
         }
 
-        $session = new Session();
-
-        $collection = new RecipeCollection();
-        $collection-> setName($request->request->get('name'));
-        $collection-> setAuthor($session -> get('username'));
-        $collection-> setDescription($request->request->get('description'));
-
-
-        //entity manager
-        $em = $this->getDoctrine()->getManager();
-
-        //tells Doctrine you want to (eventually) save the Product (no queries yet)
-        $em->persist($collection);
-
-        //actually executes the queries (i.e. the INSERT query)
-        $em->flush();
-
-        $this->addFlash(
-            'error',
-            'created new collection!!'
-        );
-
-        return $this -> redirect('/collection');
-
-
+        return $this->render('collection/new.html.twig', array(
+            'collection' => $collection,
+            'form' => $form->createView(),
+        ));
     }
 
     /**
-     * @Route("/collection/delete/{name}", name="deleteCollection")
+     * Finds and displays a collection entity.
+     *
+     * @Route("/{id}", name="collection_show")
+     * @Method("GET")
      */
-    public function deleteCollectionAction($name)
+    public function showAction(Collection $collection)
     {
+        $deleteForm = $this->createDeleteForm($collection);
 
-           $em = $this -> getDoctrine()-> getManager();
-           $collection = $em->getRepository('AppBundle:RecipeCollection')->findOneByName($name);
-
-           $recipes = $em-> getRepository('AppBundle:Recipe')->findByCollection($name);
-
-
-           foreach ($recipes as $recipe) {
-
-                $recipe -> setCollection("");
-                $em->persist($recipe);
-
-           }
-
-
-           $em->remove($collection);
-           $em->flush();
-
-           return $this->redirect('/collection');
+        return $this->render('collection/show.html.twig', array(
+            'collection' => $collection,
+            'delete_form' => $deleteForm->createView(),
+        ));
     }
 
     /**
-     * @Route("/collection/edit/{name}", name="editCollection")
+     * Displays a form to edit an existing collection entity.
+     *
+     * @Route("/{id}/edit", name="collection_edit")
+     * @Method({"GET", "POST"})
      */
-    public function editCollectionAction($name)
+    public function editAction(Request $request, Collection $collection)
     {
+        $deleteForm = $this->createDeleteForm($collection);
+        $editForm = $this->createForm('AppBundle\Form\CollectionType', $collection);
+        $editForm->handleRequest($request);
 
-        $em = $this -> getDoctrine()-> getManager();
-        $collection = $em->getRepository('AppBundle:RecipeCollection')->findOneByName($name);
+        if ($editForm->isSubmitted() && $editForm->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
 
-        $argsArray = [
-            'collection' => $collection
-        ];
+            return $this->redirectToRoute('collection_edit', array('id' => $collection->getId()));
+        }
 
-        $templateName = 'collection/editCollection';
-        return $this->render($templateName. '.html.twig',$argsArray);
+        return $this->render('collection/edit.html.twig', array(
+            'collection' => $collection,
+            'edit_form' => $editForm->createView(),
+            'delete_form' => $deleteForm->createView(),
+        ));
     }
 
     /**
-     * @Route("/collection/editCollection", name="processEditCollection")
+     * Deletes a collection entity.
+     *
+     * @Route("/{id}", name="collection_delete")
+     * @Method("DELETE")
      */
-    public function editProcessAction(Request $request)
+    public function deleteAction(Request $request, Collection $collection)
     {
+        $form = $this->createDeleteForm($collection);
+        $form->handleRequest($request);
 
-        $em = $this -> getDoctrine()-> getManager();
-        $collection = $em->getRepository('AppBundle:RecipeCollection')->find($request->request->get('id'));
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->remove($collection);
+            $em->flush();
+        }
 
-        $collection -> setName($request->request->get('name'));
-        $collection -> setDescription($request->get('description'));
-
-        $em -> persist($collection);
-        $em -> flush();
-
-        $this->addFlash(
-            'error',
-            'edited collection!!'
-        );
-
-        $templateName = 'collection/collection';
-        return $this->collectionAction();
+        return $this->redirectToRoute('collection_index');
     }
 
+    /**
+     * Creates a form to delete a collection entity.
+     *
+     * @param Collection $collection The collection entity
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
+    private function createDeleteForm(Collection $collection)
+    {
+        return $this->createFormBuilder()
+            ->setAction($this->generateUrl('collection_delete', array('id' => $collection->getId())))
+            ->setMethod('DELETE')
+            ->getForm()
+        ;
+    }
 }

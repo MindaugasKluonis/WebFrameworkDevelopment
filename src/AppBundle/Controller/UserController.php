@@ -1,202 +1,136 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: MKluo
- * Date: 31/03/2017
- * Time: 11:51
- */
 
 namespace AppBundle\Controller;
 
-
-use AppBundle\Entity\Recipe;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use AppBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * User controller.
+ *
+ * @Route("user")
+ */
 class UserController extends Controller
 {
-
     /**
-     * @Route("/profile", name="profilePage")
+     * Lists all user entities.
+     *
+     * @Route("/", name="user_index")
+     * @Method("GET")
      */
-    public function profileAction()
+    public function indexAction()
     {
-
-
-        $session = new Session();
-
-        if(!$session -> get('username')){
-
-
-            $this->addFlash(
-                'error',
-                'log in first to access your profile'
-            );
-
-            return $this->redirect('/');
-
-        }
-
-        $templateName = 'users/profile';
-        return $this->render($templateName. '.html.twig');
-    }
-
-    /**
-     * @Route("/recipe/processNewRecipe", name="recipesCreateRecipe")
-     */
-    public function createRecipeAction(Request $request){
-
-
-        if(empty($request->request->get('title'))){
-            $this->addFlash(
-                'error',
-                'student name cannot be an empty string'
-            );
-            // forward this to the createAction() method
-            return $this->redirect('/recipes/create/new');
-        }
-
-        $session = new Session();
-
-        $recipe = new Recipe();
-        $recipe-> setTitle($request->request->get('title'));
-        $recipe-> setAuthor($session -> get('username'));
-        $recipe-> setIngredients($request->request->get('ingredients'));
-        $recipe-> setSteps($request->request->get('steps'));
-        $recipe-> setSummary($request->request->get('summary'));
-        $recipe-> setCollection($request->request->get('collection'));
-
-
-        //entity manager
         $em = $this->getDoctrine()->getManager();
 
-        //tells Doctrine you want to (eventually) save the Product (no queries yet)
-        $em->persist($recipe);
+        $users = $em->getRepository('AppBundle:User')->findAll();
 
-        //actually executes the queries (i.e. the INSERT query)
-        $em->flush();
-
-        $this->addFlash(
-            'error',
-            'created new recipe!!'
-        );
-
-        return $this -> redirect('/profile');
-
+        return $this->render('user/index.html.twig', array(
+            'users' => $users,
+        ));
     }
 
     /**
-     * @Route("/recipes/create/new", name="recipesCreateNewPage")
+     * Creates a new user entity.
+     *
+     * @Route("/new", name="user_new")
+     * @Method({"GET", "POST"})
      */
-    public function createNewRecipeAction(Request $request){
-
-        $session = new Session();
-
-        $repository = $this->getDoctrine()->getRepository('AppBundle:RecipeCollection');
-
-        $collection = $repository ->findByAuthor($session -> get('username'));
-
-        $argsArray = [
-            'collections' => $collection
-        ];
-
-
-        $templateName = 'recipe/recipeCreation';
-        return $this->render($templateName. '.html.twig', $argsArray);
-
-    }
-
-    /**
-     * @Route("/profile/edit", name="editPage")
-     */
-    public function showEditableRecipesAction()
+    public function newAction(Request $request)
     {
+        $user = new User();
+        $form = $this->createForm('AppBundle\Form\UserType', $user);
+        $form->handleRequest($request);
 
-        $session = new Session();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($user);
+            $em->flush();
 
-        $recipeRepository = $repository = $this->getDoctrine()->getRepository('AppBundle:Recipe');
-
-        $recipes = $repository ->findByAuthor($session -> get('username'));
-
-        $argsArray = [
-            'recipes' => $recipes
-        ];
-
-        $templateName = 'recipe/showEditable';
-        return $this->render($templateName. '.html.twig',$argsArray);
-    }
-
-    /**
-     * @Route("/edit/recipe/edit/{id}", name="editRecipePage")
-     */
-    public function editRecipeAction($id)
-    {
-
-        $session = new Session();
-
-        $em = $this->getDoctrine()->getManager();
-        $recipes = $em->getRepository('AppBundle:Recipe')->findById($id);
-
-        $collection = $em->getRepository('AppBundle:RecipeCollection')->findByAuthor($session -> get('username'));
-
-        if (!$recipes) {
-            throw $this->createNotFoundException(
-                'No recipe found with name: '.$id
-            );
-        }
-        $argsArray = [
-            'recipes' => $recipes,
-            'collections' => $collection
-        ];
-
-        $templateName = 'recipe/editRecipe';
-        return $this->render($templateName. '.html.twig',$argsArray);
-    }
-
-
-    /**
-     * @Route("/recipe/edit/new", name="editNewRecipePage")
-     */
-    public function editNewRecipeAction(Request $request)
-    {
-
-        if(empty($request->request->get('title'))){
-            $this->addFlash(
-                'error',
-                'student name cannot be an empty string'
-            );
-            // forward this to the createAction() method
-            return $this->redirect('/profile');
+            return $this->redirectToRoute('user_show', array('id' => $user->getId()));
         }
 
-        $session = new Session();
-
-        $em = $this->getDoctrine()->getManager();
-        $recipe = $em->getRepository('AppBundle:Recipe')-> find($request->request->get('id'));
-
-        $recipe-> setTitle($request->request->get('title'));
-        $recipe-> setAuthor($session -> get('username'));
-        $recipe-> setIngredients($request->request->get('ingredients'));
-        $recipe-> setSteps($request->request->get('steps'));
-        $recipe-> setSummary($request->request->get('summary'));
-        $recipe-> setCollection($request->request->get('collection'));
-
-
-//      tells Doctrine you want to (eventually) save the Product (no queries yet)
-        $em->persist($recipe);
-
-        //actually executes the queries (i.e. the INSERT query)
-        $em->flush();
-
-        $this->addFlash(
-            'error',
-            'edited new recipe!!'
-        );
-
-        $templateName = '/profile';
-        return $this->redirect($templateName);
+        return $this->render('user/new.html.twig', array(
+            'user' => $user,
+            'form' => $form->createView(),
+        ));
     }
 
+    /**
+     * Finds and displays a user entity.
+     *
+     * @Route("/{id}", name="user_show")
+     * @Method("GET")
+     */
+    public function showAction(User $user)
+    {
+        $deleteForm = $this->createDeleteForm($user);
+
+        return $this->render('user/show.html.twig', array(
+            'user' => $user,
+            'delete_form' => $deleteForm->createView(),
+        ));
+    }
+
+    /**
+     * Displays a form to edit an existing user entity.
+     *
+     * @Route("/{id}/edit", name="user_edit")
+     * @Method({"GET", "POST"})
+     */
+    public function editAction(Request $request, User $user)
+    {
+        $deleteForm = $this->createDeleteForm($user);
+        $editForm = $this->createForm('AppBundle\Form\UserType', $user);
+        $editForm->handleRequest($request);
+
+        if ($editForm->isSubmitted() && $editForm->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
+
+            return $this->redirectToRoute('user_edit', array('id' => $user->getId()));
+        }
+
+        return $this->render('user/edit.html.twig', array(
+            'user' => $user,
+            'edit_form' => $editForm->createView(),
+            'delete_form' => $deleteForm->createView(),
+        ));
+    }
+
+    /**
+     * Deletes a user entity.
+     *
+     * @Route("/{id}", name="user_delete")
+     * @Method("DELETE")
+     */
+    public function deleteAction(Request $request, User $user)
+    {
+        $form = $this->createDeleteForm($user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->remove($user);
+            $em->flush();
+        }
+
+        return $this->redirectToRoute('user_index');
+    }
+
+    /**
+     * Creates a form to delete a user entity.
+     *
+     * @param User $user The user entity
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
+    private function createDeleteForm(User $user)
+    {
+        return $this->createFormBuilder()
+            ->setAction($this->generateUrl('user_delete', array('id' => $user->getId())))
+            ->setMethod('DELETE')
+            ->getForm()
+        ;
+    }
 }

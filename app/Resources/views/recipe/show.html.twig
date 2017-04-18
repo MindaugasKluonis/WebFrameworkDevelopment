@@ -1,16 +1,48 @@
 {% extends 'base.html.twig' %}
 
-{% block pageTitle %}{{ recipe.title }}{% endblock %}
-
 {% block body %}
+    <h1>Recipe</h1>
 
-    <h1>Show one recipe</h1>
+    <table>
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ recipe.id }}</td>
+            </tr>
+            <tr>
+                <th>Title</th>
+                <td>{{ recipe.title }}</td>
+            </tr>
+            <tr>
+                <th>Summary</th>
+                <td>{{ recipe.summary }}</td>
+            </tr>
+            <tr>
+                <th>Ingredients</th>
+                <td>{{ recipe.ingredients }}</td>
+            </tr>
+            <tr>
+                <th>Steps</th>
+                <td>{{ recipe.steps }}</td>
+            </tr>
+            <tr>
+                <th>Author</th>
+                <td>{{ recipe.author }}</td>
+            </tr>
+        </tbody>
+    </table>
 
-    {{ dump() }}
-
-    <p>Title: {{ recipe.title }}</p>
-    <p>Author: {{ recipe.author }}</p>
-
-
-
+    <ul>
+        <li>
+            <a href="{{ path('recipe_index') }}">Back to the list</a>
+        </li>
+        <li>
+            <a href="{{ path('recipe_edit', { 'id': recipe.id }) }}">Edit</a>
+        </li>
+        <li>
+            {{ form_start(delete_form) }}
+                <input type="submit" value="Delete">
+            {{ form_end(delete_form) }}
+        </li>
+    </ul>
 {% endblock %}

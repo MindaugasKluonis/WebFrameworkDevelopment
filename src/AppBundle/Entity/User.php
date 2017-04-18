@@ -2,15 +2,13 @@
 
 namespace AppBundle\Entity;
 
+
 use Doctrine\ORM\Mapping as ORM;
 /**
 * @ORM\Entity
-* @ORM\Table(name="users")
+* @ORM\Table(name="user")
 */
-
-
-class User
-{
+class User{
 
     /**
      * @ORM\Column(type="integer")
@@ -18,21 +16,25 @@ class User
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
     /**
-     * @ORM\Column(type="string", length=50)
+     * @ORM\Column(type="string", length=100)
      */
     private $username;
 
     /**
-     * @ORM\Column(type="string", length=50)
+     * @ORM\Column(type="string", length=100)
      */
     private $password;
 
     /**
-     * @ORM\Column(type="string", length=20)
+     * @ORM\Column(type="string", length=100)
      */
     private $role;
+
+    /**
+     * @ORM\Column(type="string", length=100)
+     */
+    private $loggedIn;
 
 
     /**
@@ -115,5 +117,29 @@ class User
     public function getRole()
     {
         return $this->role;
+    }
+
+    /**
+     * Set loggedIn
+     *
+     * @param string $loggedIn
+     *
+     * @return User
+     */
+    public function setLoggedIn($loggedIn)
+    {
+        $this->loggedIn = $loggedIn;
+
+        return $this;
+    }
+
+    /**
+     * Get loggedIn
+     *
+     * @return string
+     */
+    public function getLoggedIn()
+    {
+        return $this->loggedIn;
     }
 }
