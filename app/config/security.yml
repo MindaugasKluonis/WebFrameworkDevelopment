@@ -2,10 +2,36 @@
 # http://symfony.com/doc/current/security.html
 security:
 
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_USER
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+
+
+    encoders:
+        Symfony\Component\Security\Core\User\UserInterface:
+            algorithm: bcrypt
+            cost: 12
+
     # http://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
     providers:
+
+        our_db_provider:
+            entity:
+                class: AppBundle:User
+                property: username
+
         in_memory:
-            memory: ~
+            memory:
+                users:
+                    user:
+                        password: $2y$12$k3welbcP4Y01pFLuv1JQfuPcNxGiGVpKaTizWA5E71afiOtu2efgm
+                        roles: 'ROLE_USER'
+                    admin:
+                        password: $2y$12$0OIU1.uSbm825RYq6D/WXePT9oz7VO3b1pdpKy05zC8t0hnhfmBnq
+                        roles: 'ROLE_ADMIN'
+                    minde:
+                        password: $2y$12$Az4T6TDCFg3pbncGQXaiwuyjO0aS7rRSEsU/UHAlE0iOVRULxaRCm
+                        roles: 'ROLE_ADMIN'
 
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
@@ -15,6 +41,9 @@ security:
 
         main:
             anonymous: ~
+            form_login:
+                login_path: login
+                check_path: login
             # activate different ways to authenticate
 
             # http://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
@@ -22,3 +51,9 @@ security:
 
             # http://symfony.com/doc/current/cookbook/security/form_login_setup.html
             #form_login: ~
+
+            logout:
+                path: /logout
+                target: /
+
+

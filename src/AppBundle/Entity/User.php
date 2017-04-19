@@ -4,11 +4,15 @@ namespace AppBundle\Entity;
 
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
+
 /**
 * @ORM\Entity
 * @ORM\Table(name="user")
+* @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
 */
-class User{
+class User implements UserInterface, \Serializable
+{
 
     /**
      * @ORM\Column(type="integer")
@@ -26,120 +30,41 @@ class User{
      */
     private $password;
 
+    //email, recipes, collections, roles,
+
     /**
-     * @ORM\Column(type="string", length=100)
+     * @ORM\Column(type="json_array")
      */
-    private $role;
+    private $roles = [];
 
     /**
      * @ORM\Column(type="string", length=100)
      */
     private $loggedIn;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Recipe", mappedBy="author")
+     */
+    private $recipes;
 
     /**
-     * Get id
-     *
-     * @return integer
+     * @ORM\OneToMany(targetEntity="Tag", mappedBy="author")
      */
-    public function getId()
-    {
-        return $this->id;
-    }
+    private $tags;
 
     /**
-     * Set username
-     *
-     * @param string $username
-     *
-     * @return User
+     * @ORM\OneToMany(targetEntity="Collection", mappedBy="author")
      */
-    public function setUsername($username)
-    {
-        $this->username = $username;
-
-        return $this;
-    }
+    private $collections;
 
     /**
-     * Get username
-     *
-     * @return string
+     * Constructor
      */
-    public function getUsername()
+    public function __construct()
     {
-        return $this->username;
+        $this->collections = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->recipes = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->tags = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
-    /**
-     * Set password
-     *
-     * @param string $password
-     *
-     * @return User
-     */
-    public function setPassword($password)
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-    /**
-     * Get password
-     *
-     * @return string
-     */
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-    /**
-     * Set role
-     *
-     * @param string $role
-     *
-     * @return User
-     */
-    public function setRole($role)
-    {
-        $this->role = $role;
-
-        return $this;
-    }
-
-    /**
-     * Get role
-     *
-     * @return string
-     */
-    public function getRole()
-    {
-        return $this->role;
-    }
-
-    /**
-     * Set loggedIn
-     *
-     * @param string $loggedIn
-     *
-     * @return User
-     */
-    public function setLoggedIn($loggedIn)
-    {
-        $this->loggedIn = $loggedIn;
-
-        return $this;
-    }
-
-    /**
-     * Get loggedIn
-     *
-     * @return string
-     */
-    public function getLoggedIn()
-    {
-        return $this->loggedIn;
-    }
 }
