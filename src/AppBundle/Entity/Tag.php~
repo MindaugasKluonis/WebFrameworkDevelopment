@@ -28,8 +28,11 @@ class Tag
      */
     private $description;
 
+
     /**
-     * @ORM\Column(type="string", length=100)
+     *
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="tags")
+     * @ORM\JoinColumn(name="author_id", referencedColumnName="id")
      */
     private $author;
 
@@ -42,6 +45,8 @@ class Tag
      * @ORM\Column(type="integer")
      */
     private $votes;
+
+
 
 
 }

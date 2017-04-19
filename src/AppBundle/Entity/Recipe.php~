@@ -47,7 +47,9 @@ class Recipe
     private $collection;
 
     /**
-     * @ORM\Column(type="string", length=100)
+     *
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="recipes")
+     * @ORM\JoinColumn(name="author_id", referencedColumnName="id")
      */
     private $author;
 
@@ -56,5 +58,19 @@ class Recipe
      */
     private $tags;
 
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->tags = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
 
 }
