@@ -25,13 +25,26 @@ class TagController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
+        $tags = null;
+
         $user = new User();
 
-        $user = $em -> getRepository('AppBundle:User')->findOneByUsername(
-            $this->get('security.token_storage')->getToken()->getUser()->getUsername()
-        );
+        if (TRUE === $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')){
 
-        $tags = $em->getRepository('AppBundle:Tag')->findByAuthor($user);
+            $tags = $em->getRepository('AppBundle:Tag')->findAll();
+
+        }
+
+        elseif (TRUE === $this->get('security.authorization_checker')->isGranted('ROLE_USER')) {
+
+            $user = $em->getRepository('AppBundle:User')->findOneByUsername(
+                $this->get('security.token_storage')->getToken()->getUser()->getUsername()
+            );
+
+            $tags = $em->getRepository('AppBundle:Tag')->findByAuthor($user);
+        }
+
+
 
         return $this->render('tag/index.html.twig', array(
             'tags' => $tags,
@@ -47,17 +60,22 @@ class TagController extends Controller
     public function newAction(Request $request)
     {
         $tag = new Tag();
-        $form = $this->createForm('AppBundle\Form\TagType', $tag);
+        $form = $this->createForm('AppBundle\Form\newTagType', $tag);
         $form->handleRequest($request);
 
         $user = new User();
 
         $em = $this->getDoctrine()->getManager();
-        $user = $em -> getRepository('AppBundle:User')->findOneByUsername(
-            $this->get('security.token_storage')->getToken()->getUser()->getUsername()
-        );
 
-        $tag -> setAuthor($user);
+        if (TRUE === $this->get('security.authorization_checker')->isGranted('ROLE_USER')) {
+
+            $user = $em->getRepository('AppBundle:User')->findOneByUsername(
+                $this->get('security.token_storage')->getToken()->getUser()->getUsername()
+            );
+
+            $tag -> setAuthor($user);
+        }
+
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
@@ -98,7 +116,18 @@ class TagController extends Controller
     public function editAction(Request $request, Tag $tag)
     {
         $deleteForm = $this->createDeleteForm($tag);
-        $editForm = $this->createForm('AppBundle\Form\TagType', $tag);
+        if (TRUE === $this->get('security.authorization_checker')->isGranted('ROLE_USER')){
+
+            $editForm = $this->createForm('AppBundle\Form\TagType', $tag);
+
+        }
+
+        else{
+
+            $editForm = $this->createForm('AppBundle\Form\newTagType', $tag);
+
+        }
+
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
@@ -148,5 +177,22 @@ class TagController extends Controller
             ->setMethod('DELETE')
             ->getForm()
         ;
+    }
+
+    /**
+     * Lists all tag entities.
+     *
+     * @Route("/view/proposed", name="proposed_tag")
+     * @Method("GET")
+     */
+    public function proposedAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $tags = $em->getRepository('AppBundle:Tag')->findAll();
+
+        return $this->render('tag/proposed.html.twig', array(
+            'tags' => $tags,
+        ));
     }
 }

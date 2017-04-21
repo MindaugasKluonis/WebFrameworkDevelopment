@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block pageTitle %}Home Page{% endblock %}
+
+{% block body %}
+
+    {% for flash_message in app.session.flashBag.get('error') %}
+        <div class="flash-error">
+            {{ flash_message }}
+        </div>
+    {% endfor %}
+
+
+    {% if app.user is not null %}
+        {{ app.user.username }}
+    {% endif %}
+
+    {% if is_granted('ROLE_ADMIN') %}
+
+        HELLO ADMIN :)
+
+    {% endif %}
+
+    <h1>View Recipe Page</h1>
+
+    {{ dump() }}
+
+    <table>
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Summary</th>
+            <th>Ingredients</th>
+            <th>Steps</th>
+            <th>Author</th>
+            <th>Collection</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ recipe.title }}</td>
+                <td>{{ recipe.summary }}</td>
+                <td>{{ recipe.ingredients }}</td>
+                <td>{{ recipe.steps }}</td>
+                <td>{{ recipe.author }}</td>
+                <td>{{ recipe.collection }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+
+{% endblock %}

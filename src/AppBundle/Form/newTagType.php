@@ -7,7 +7,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class TagType extends AbstractType
+class newTagType extends AbstractType
 {
     /**
      * {@inheritdoc}
@@ -15,16 +15,6 @@ class TagType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('name')->add('description');
-
-        $builder->add('status', ChoiceType::class, array(
-            'choices' => array(
-                'Approved' => 'Approved',
-                'Proposed' => 'Proposed',
-                'Frozen' => 'Frozen',
-            ),
-            'required'    => true,
-            'empty_data'  => null
-        ));
 
     }
     

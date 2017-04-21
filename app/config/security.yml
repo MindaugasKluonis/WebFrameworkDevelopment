@@ -60,6 +60,6 @@ security:
                 target: /
 
 
-    access_control:
-            # require ROLE_ADMIN for /admin*
-            - { path: ^/recipe, roles: ROLE_USER }
+#    access_control:
+#            # require ROLE_ADMIN for /admin*
+#            - { path: ^/recipe, roles: ROLE_USER }

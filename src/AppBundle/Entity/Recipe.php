@@ -60,6 +60,12 @@ class Recipe
 
 
     /**
+     * @ORM\Column(type="string")
+     */
+    private $public;
+
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -260,5 +266,29 @@ class Recipe
     public function getTags()
     {
         return $this->tags;
+    }
+
+    /**
+     * Set public
+     *
+     * @param string $public
+     *
+     * @return Recipe
+     */
+    public function setPublic($public)
+    {
+        $this->public = $public;
+
+        return $this;
+    }
+
+    /**
+     * Get public
+     *
+     * @return string
+     */
+    public function getPublic()
+    {
+        return $this->public;
     }
 }

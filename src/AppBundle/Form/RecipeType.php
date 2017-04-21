@@ -5,6 +5,7 @@ namespace AppBundle\Form;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -20,6 +21,7 @@ class RecipeType extends AbstractType
         $builder->add('title')->add('summary')->add('ingredients')->add('steps')->add('tags');
 
         $this->var = $options['user_id'];
+        $this->tagApproved = 'Approved';
 
         $builder->add('collection', EntityType::class, [
 
@@ -36,13 +38,27 @@ class RecipeType extends AbstractType
 
         $builder->add('tags', EntityType::class, [
 
-
+            'query_builder' => function (EntityRepository $er) {
+                return $er->createQueryBuilder('u')
+                    ->orderBy('u.name', 'ASC')
+                    ->where('u.status = :tagApproved')
+                    ->setParameter("tagApproved", $this->tagApproved);
+            },
 
             'class' => 'AppBundle:Tag',
             'choice_label' => 'name',
             'expanded' => true,
             'multiple' => true,
         ]);
+
+        $builder->add('public', ChoiceType::class, array(
+            'choices' => array(
+                'Public' => 'PUBLIC',
+                'Private' => 'PRIVATE'
+            ),
+            'required'    => true,
+            'empty_data'  => null
+        ));
 
     }
 

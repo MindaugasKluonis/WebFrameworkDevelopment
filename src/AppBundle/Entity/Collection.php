@@ -167,4 +167,10 @@ class Collection
     {
         return $this->recipes;
     }
+
+    public function __toString()
+    {
+        // TODO: Implement __toString() method.
+        return $this -> getTitle();
+    }
 }

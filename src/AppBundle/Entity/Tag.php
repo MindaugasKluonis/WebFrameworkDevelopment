@@ -39,7 +39,7 @@ class Tag
     /**
      * @ORM\Column(type="string", length=100)
      */
-    private $status = 'Submitted';
+    private $status = 'Proposed';
 
     /**
      * @ORM\Column(type="integer")

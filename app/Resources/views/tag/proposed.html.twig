@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block pageTitle %}Home Page{% endblock %}
+
+{% block body %}
+
+    {% for flash_message in app.session.flashBag.get('error') %}
+        <div class="flash-error">
+            {{ flash_message }}
+        </div>
+    {% endfor %}
+
+
+    {% if app.user is not null %}
+        {{ app.user.username }}
+    {% endif %}
+
+    {% if is_granted('ROLE_ADMIN') %}
+
+        HELLO ADMIN :)
+
+    {% endif %}
+
+    <h1>Proposed Tags Page</h1>
+
+    {{ dump() }}
+
+    <table>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Votes</th>
+            <th>Author<th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for tag in tags %}
+            <tr>
+                <td>{{ tag.name }}</td>
+                <td>{{ tag.description }}</td>
+                <td>{{ tag.status }}</td>
+                <td>{{ tag.votes }}</td>
+                {% if tag.author is null %}
+
+                    <td>Anonymous</td>
+
+                {% else %}
+
+                    <td>{{ tag.author }}</td>
+
+                {% endif %}
+
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('tag_new') }}">Create a new tag</a>
+
+
+{% endblock %}

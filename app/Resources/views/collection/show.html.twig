@@ -3,6 +3,8 @@
 {% block body %}
     <h1>Collection</h1>
 
+    {{ dump() }}
+
     <table>
         <tbody>
             <tr>
@@ -19,6 +21,12 @@
             </tr>
         </tbody>
     </table>
+
+    <ul>
+        {% for recipe in collection.recipes %}
+            <li>{{ recipe.title }}</li>
+        {% endfor %}
+    </ul>
 
     <ul>
         <li>

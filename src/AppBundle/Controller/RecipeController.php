@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 /**
  * Recipe controller.
@@ -44,6 +45,7 @@ class RecipeController extends Controller
      *
      * @Route("/new", name="recipe_new")
      * @Method({"GET", "POST"})
+     * @Security("has_role('ROLE_USER')")
      */
     public function newAction(Request $request)
     {
@@ -103,7 +105,18 @@ class RecipeController extends Controller
     public function editAction(Request $request, Recipe $recipe)
     {
         $deleteForm = $this->createDeleteForm($recipe);
-        $editForm = $this->createForm('AppBundle\Form\RecipeType', $recipe);
+        $user = new User();
+
+        $em = $this->getDoctrine()->getManager();
+        $user = $em -> getRepository('AppBundle:User')->findOneByUsername(
+            $this->get('security.token_storage')->getToken()->getUser()->getUsername()
+        );
+
+        $editForm = $this->createForm('AppBundle\Form\RecipeType', $recipe, array(
+
+            'user_id' => $user->getId()
+
+        ));
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
@@ -154,4 +167,63 @@ class RecipeController extends Controller
             ->getForm()
         ;
     }
+
+    /**
+     * Displays a form to edit an existing recipe entity.
+     *
+     * @Route("/show/all", name="public_recipes")
+     *
+     */
+    public function showPublicRecipesAction(Request $request)
+    {
+
+        $em = $this->getDoctrine()->getManager();
+
+
+        $recipes = $em->getRepository('AppBundle:Recipe')->findAll();
+
+        $recipes = $this -> getPublicRecipes($recipes);
+
+
+        return $this->render('recipe/publicRecipes.html.twig', array(
+            'recipes' => $recipes,
+        ));
+
+    }
+
+    public function getPublicRecipes($recipes){
+
+        $filtered = array();
+
+        foreach ($recipes as $value) {
+            if($value -> getPublic() == 'PUBLIC'){
+
+                $filtered[] = $value;
+
+            }
+        }
+
+        return $filtered;
+
+
+    }
+
+    /**
+     * Displays a form to edit an existing recipe entity.
+     *
+     * @Route("/show/view/{id}", name="view_recipe")
+     *
+     */
+    public function viewPublicRecipesAction(Request $request, Recipe $recipe)
+    {
+
+
+        return $this->render('recipe/view.html.twig', array(
+            'recipe' => $recipe,
+        ));
+
+    }
+
+
+
 }
