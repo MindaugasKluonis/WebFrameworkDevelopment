@@ -3,9 +3,11 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Recipe;
+use AppBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Recipe controller.
@@ -24,7 +26,13 @@ class RecipeController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $recipes = $em->getRepository('AppBundle:Recipe')->findAll();
+        $user = new User();
+
+        $user = $em -> getRepository('AppBundle:User')->findOneByUsername(
+            $this->get('security.token_storage')->getToken()->getUser()->getUsername()
+        );
+
+        $recipes = $em->getRepository('AppBundle:Recipe')->findByAuthor($user);
 
         return $this->render('recipe/index.html.twig', array(
             'recipes' => $recipes,
@@ -40,11 +48,24 @@ class RecipeController extends Controller
     public function newAction(Request $request)
     {
         $recipe = new Recipe();
-        $form = $this->createForm('AppBundle\Form\RecipeType', $recipe);
+        $user = new User();
+
+        $em = $this->getDoctrine()->getManager();
+        $user = $em -> getRepository('AppBundle:User')->findOneByUsername(
+            $this->get('security.token_storage')->getToken()->getUser()->getUsername()
+        );
+
+        $form = $this->createForm('AppBundle\Form\RecipeType', $recipe, array(
+
+            'user_id' => $user->getId()
+
+        ));
+
         $form->handleRequest($request);
 
+        $recipe -> setAuthor($user);
+
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
             $em->persist($recipe);
             $em->flush();
 

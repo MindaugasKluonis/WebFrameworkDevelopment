@@ -8,8 +8,14 @@
 
 namespace AppBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
+use Symfony\Component\Security\Core\Security;
+
 
 
 class SecurityController extends Controller
@@ -21,20 +27,24 @@ class SecurityController extends Controller
     public function loginAction(Request $request)
     {
 
+
         $authenticationUtils = $this->get('security.authentication_utils');
         // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
-        // Twig stuff
+
         $templateName = 'security/login';
         $argsArray = [
-            'last_username' => $lastUsername,
             'error' => $error,
+            'last_username' => $lastUsername
         ];
+
         return $this->render($templateName . '.html.twig', $argsArray);
 
 
     }
+
+
 
 }

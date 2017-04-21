@@ -10,6 +10,17 @@
         </div>
     {% endfor %}
 
+
+    {% if app.user is not null %}
+        {{ app.user.username }}
+    {% endif %}
+
+    {% if is_granted('ROLE_ADMIN') %}
+
+        HELLO ADMIN :)
+
+    {% endif %}
+
     <h1>Home Page</h1>
 
         {{ dump() }}

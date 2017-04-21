@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Tag;
+use AppBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +25,13 @@ class TagController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $tags = $em->getRepository('AppBundle:Tag')->findAll();
+        $user = new User();
+
+        $user = $em -> getRepository('AppBundle:User')->findOneByUsername(
+            $this->get('security.token_storage')->getToken()->getUser()->getUsername()
+        );
+
+        $tags = $em->getRepository('AppBundle:Tag')->findByAuthor($user);
 
         return $this->render('tag/index.html.twig', array(
             'tags' => $tags,
@@ -42,6 +49,15 @@ class TagController extends Controller
         $tag = new Tag();
         $form = $this->createForm('AppBundle\Form\TagType', $tag);
         $form->handleRequest($request);
+
+        $user = new User();
+
+        $em = $this->getDoctrine()->getManager();
+        $user = $em -> getRepository('AppBundle:User')->findOneByUsername(
+            $this->get('security.token_storage')->getToken()->getUser()->getUsername()
+        );
+
+        $tag -> setAuthor($user);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();

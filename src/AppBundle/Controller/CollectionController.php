@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Collection;
+use AppBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +25,13 @@ class CollectionController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $collections = $em->getRepository('AppBundle:Collection')->findAll();
+        $user = new User();
+
+        $user = $em -> getRepository('AppBundle:User')->findOneByUsername(
+            $this->get('security.token_storage')->getToken()->getUser()->getUsername()
+        );
+
+        $collections = $em->getRepository('AppBundle:Collection')->findByAuthor($user);
 
         return $this->render('collection/index.html.twig', array(
             'collections' => $collections,
@@ -42,6 +49,15 @@ class CollectionController extends Controller
         $collection = new Collection();
         $form = $this->createForm('AppBundle\Form\CollectionType', $collection);
         $form->handleRequest($request);
+
+        $user = new User();
+
+        $em = $this->getDoctrine()->getManager();
+        $user = $em -> getRepository('AppBundle:User')->findOneByUsername(
+            $this->get('security.token_storage')->getToken()->getUser()->getUsername()
+        );
+
+        $collection -> setAuthor($user);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
