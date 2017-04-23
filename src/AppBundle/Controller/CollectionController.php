@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 /**
  * Collection controller.
@@ -21,23 +22,20 @@ class CollectionController extends Controller
      *
      * @Route("/", name="collection_index")
      * @Method("GET")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
 
-        $user = new User();
 
-        $user = $em -> getRepository('AppBundle:User')->findOneByUsername(
-            $this->get('security.token_storage')->getToken()->getUser()->getUsername()
-        );
 
-        $collections = $em->getRepository('AppBundle:Collection')->findByAuthor($user);
-        $sharedCollections = $user -> getSharedCollections();
+        $collections = $em->getRepository('AppBundle:Collection')->findAll();
+
 
         return $this->render('collection/index.html.twig', array(
             'collections' => $collections,
-            'shared_collections' => $sharedCollections
+
         ));
     }
 
@@ -46,6 +44,7 @@ class CollectionController extends Controller
      *
      * @Route("/new", name="collection_new")
      * @Method({"GET", "POST"})
+     * @Security("has_role('ROLE_USER')")
      */
     public function newAction(Request $request)
     {
@@ -67,7 +66,12 @@ class CollectionController extends Controller
             $em->persist($collection);
             $em->flush();
 
-            return $this->redirectToRoute('collection_show', array('id' => $collection->getId()));
+            $this->addFlash(
+                'error',
+                'new collection created.'
+            );
+
+            return $this->redirectToRoute('user_show', array('id' => $user->getId()));
         }
 
         return $this->render('collection/new.html.twig', array(
@@ -81,6 +85,7 @@ class CollectionController extends Controller
      *
      * @Route("/{id}", name="collection_show")
      * @Method("GET")
+     * @Security("has_role('ROLE_USER')")
      */
     public function showAction(Collection $collection)
     {
@@ -97,6 +102,7 @@ class CollectionController extends Controller
      *
      * @Route("/{id}/edit", name="collection_edit")
      * @Method({"GET", "POST"})
+     * @Security("has_role('ROLE_USER')")
      */
     public function editAction(Request $request, Collection $collection)
     {
@@ -104,10 +110,20 @@ class CollectionController extends Controller
         $editForm = $this->createForm('AppBundle\Form\CollectionType', $collection);
         $editForm->handleRequest($request);
 
+        $em = $this->getDoctrine()->getManager();
+        $user = $em -> getRepository('AppBundle:User')->findOneByUsername(
+            $this->get('security.token_storage')->getToken()->getUser()->getUsername()
+        );
+
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('collection_edit', array('id' => $collection->getId()));
+            $this->addFlash(
+                'error',
+                'Edit finished'
+            );
+
+            return $this->redirectToRoute('user_show', array('id' => $user->getId()));
         }
 
         return $this->render('collection/edit.html.twig', array(
@@ -122,6 +138,7 @@ class CollectionController extends Controller
      *
      * @Route("/{id}", name="collection_delete")
      * @Method("DELETE")
+     * @Security("has_role('ROLE_USER')")
      */
     public function deleteAction(Request $request, Collection $collection)
     {
@@ -134,7 +151,12 @@ class CollectionController extends Controller
             $em->flush();
         }
 
-        return $this->redirectToRoute('collection_index');
+        $this->addFlash(
+            'error',
+            'Deleted collection'
+        );
+
+        return $this->redirectToRoute('user_show', array('id' => $user->getId()));
     }
 
     /**
@@ -157,6 +179,7 @@ class CollectionController extends Controller
      * Displays a form to edit an existing recipe entity.
      *
      * @Route("/show/all", name="public_collections")
+     * @Security("has_role('ROLE_USER')")
      *
      */
     public function showPublicCollectionsAction(Request $request)
@@ -197,6 +220,7 @@ class CollectionController extends Controller
      * Displays a form to edit an existing recipe entity.
      *
      * @Route("/show/view/{id}", name="view_collection")
+     * @Security("has_role('ROLE_USER')")
      *
      */
     public function viewPublicRecipesAction(Request $request, Collection $collection)
@@ -236,6 +260,7 @@ class CollectionController extends Controller
      * Displays a form to edit an existing recipe entity.
      *
      * @Route("/show/view/{id}/share_collection", name="share_collection")
+     * @Security("has_role('ROLE_USER')")
      *
      */
     public function sharePublicCollectionAction(Request $request, Collection $collection)
@@ -256,7 +281,12 @@ class CollectionController extends Controller
         $em->persist($user);
         $em->flush();
 
-        return $this->redirectToRoute('public_collections');
+        $this->addFlash(
+            'error',
+            'Saved shared collection'
+        );
+
+        return $this->redirectToRoute('user_show', array('id' => $user->getId()));
 
     }
 
@@ -264,6 +294,7 @@ class CollectionController extends Controller
      * Displays a form to edit an existing recipe entity.
      *
      * @Route("/collection/remove/shared/{id}", name="remove_shared_collection")
+     * @Security("has_role('ROLE_USER')")
      *
      */
     public function removeSharedCollectionAction(Request $request, Collection $collection)
@@ -282,7 +313,12 @@ class CollectionController extends Controller
         $em->persist($user);
         $em->flush();
 
-        return $this->redirectToRoute('collection_index');
+        $this->addFlash(
+            'error',
+            'Removed shared collection'
+        );
+
+        return $this->redirectToRoute('user_show', array('id' => $user->getId()));
 
     }
 

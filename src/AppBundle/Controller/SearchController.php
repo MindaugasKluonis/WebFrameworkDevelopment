@@ -25,6 +25,7 @@ class SearchController extends Controller
 
         $argsArray = [
 
+
         ];
 
         $templateName = 'search/index';
@@ -51,7 +52,8 @@ class SearchController extends Controller
         $argsArray = [
 
             'data' => $data,
-            'query' => $query
+            'query' => $query,
+            'type' => $type
 
         ];
 

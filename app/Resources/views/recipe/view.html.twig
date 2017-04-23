@@ -25,68 +25,71 @@
 
     {{ dump() }}
 
-    <table>
-        <thead>
-        <tr>
-            <th>Title</th>
-            <th>Summary</th>
-            <th>Ingredients</th>
-            <th>Steps</th>
-            <th>Author</th>
-            <th>Collection</th>
-            <th>Tags</th>
-        </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>{{ recipe.title }}</td>
-                <td>{{ recipe.summary }}</td>
-                <td>{{ recipe.ingredients }}</td>
-                <td>{{ recipe.steps }}</td>
-                <td>{{ recipe.author }}</td>
-                <td>{{ recipe.collection }}</td>
-                <td>
-                    <ul>
-                        {% for tag in recipe.tags %}
+    <div class="main_table">
+        <div class="recipe">
+            {{ recipe.title }}
 
-                            <li>{{ tag.name }} </li>
+            <br>
+            <br>
 
-                        {% endfor %}
-                    </ul>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+            {% for tag in recipe.tags %}
 
-    {% if options%}
+                <span>#{{ tag.name }}</span>
 
-        {% if app.user.id != recipe.author.id %}
+            {% endfor %}
 
-            <a href="{{ path('share_recipe', { 'id': recipe.id }) }}">Save to your shared recipes</a>
+            <br>
 
-        {% else %}
+            <p>Summary: {{ recipe.summary }}</p>
+            <p>Ingredients: {{ recipe.ingredients }}</p>
+            <p>Steps: {{ recipe.steps }}</p>
+            <p>Collection: {{ recipe.collection }}</p>
 
-            Already in your collection
+            {% if options%}
 
-        {% endif %}
-    {% else %}
+                {% if app.user.id != recipe.author.id %}
 
-        Already in your collection
+                    <a href="{{ path('share_recipe', { 'id': recipe.id }) }}">Save to your shared recipes</a>
 
-    {% endif %}
+                {% else %}
+
+                    Already in your collection
+
+                {% endif %}
+            {% else %}
+
+                Already in your collection
+
+            {% endif %}
+
+            {% for comment in recipe.comments %}
+
+                <div class="comment">{{ comment.author }} says: <span>{{ comment.content }}</span></div>
 
 
-    {% for comment in recipe.comments %}
+            {% endfor %}
 
-        <p>{{ comment.author }}: {{ comment.content }}</p>
-        <hr>
+            <form style="float: right " action="comment/{{ recipe.id }}" method="POST">
+                <input type="input" name="comment">
+                <input type="submit" value="Submit">
+            </form>
 
-    {% endfor %}
+            <br>
 
-    <form action="comment/{{ recipe.id }}" method="POST">
-        <input type="input" name="comment">
-        <input type="submit" value="Submit">
-    </form>
+        </div>
+
+
+
+        <br>
+
+
+
+    </div>
+
+
+
+
+
 
 
 {% endblock %}

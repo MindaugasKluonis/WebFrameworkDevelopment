@@ -6,6 +6,7 @@
 
     <style>
         @import '/css/flash.css';
+        @import '/css/main.css';
     </style>
     {% block stylesheets %}
     {% endblock %}
@@ -15,10 +16,25 @@
 
 <ul>
     <li><a href="/">Home</a></li>
-    <li><a href="/recipes">Recipes</a></li>
-    <li><a href="/searchUser">Search User</a></li>
+    <li><a href="/recipe/show/all">Recipes</a></li>
+    <li><a href="/search">Search</a></li>
+    <li><a href="/tag/view/proposed">Tags</a></li>
+    {% if app.user is not null %}
+        <li><a href="{{ path('user_show', { 'id': app.user.id }) }}">Profile</a></li>
+        <li><a href="/logout">Logout</a></li>
+    {% else %}
+        <li><a href="/login">Login</a></li>
+    {% endif %}
+
+
 
 </ul>
+
+{% for flash_message in app.session.flashBag.get('error') %}
+    <div class="flash-error">
+        {{ flash_message }}
+    </div>
+{% endfor %}
 
 
 {% block body %}

@@ -61,7 +61,8 @@ class RecipeController extends Controller
 
         $form = $this->createForm('AppBundle\Form\RecipeType', $recipe, array(
 
-            'user_id' => $user->getId()
+            'user_id' => $user->getId(),
+            'public' => $recipe->getPublic()
 
         ));
 
@@ -73,7 +74,12 @@ class RecipeController extends Controller
             $em->persist($recipe);
             $em->flush();
 
-            return $this->redirectToRoute('recipe_show', array('id' => $recipe->getId()));
+            $this->addFlash(
+                'error',
+                'New recipe created.'
+            );
+
+            return $this->redirectToRoute('user_show', array('id' => $user->getId()));
         }
 
         return $this->render('recipe/new.html.twig', array(
@@ -87,6 +93,7 @@ class RecipeController extends Controller
      *
      * @Route("/{id}", name="recipe_show")
      * @Method("GET")
+     *
      */
     public function showAction(Recipe $recipe)
     {
@@ -103,6 +110,7 @@ class RecipeController extends Controller
      *
      * @Route("/{id}/edit", name="recipe_edit")
      * @Method({"GET", "POST"})
+     * @Security("has_role('ROLE_USER')")
      */
     public function editAction(Request $request, Recipe $recipe)
     {
@@ -116,7 +124,8 @@ class RecipeController extends Controller
 
         $editForm = $this->createForm('AppBundle\Form\RecipeType', $recipe, array(
 
-            'user_id' => $user->getId()
+            'user_id' => $user->getId(),
+            'public' => $recipe->getPublic()
 
         ));
         $editForm->handleRequest($request);
@@ -124,7 +133,12 @@ class RecipeController extends Controller
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('recipe_edit', array('id' => $recipe->getId()));
+                $this->addFlash(
+                    'error',
+                    'Edit finished'
+                );
+
+                return $this->redirectToRoute('user_show', array('id' => $user->getId()));
         }
 
         return $this->render('recipe/edit.html.twig', array(
@@ -139,11 +153,17 @@ class RecipeController extends Controller
      *
      * @Route("/{id}", name="recipe_delete")
      * @Method("DELETE")
+     * @Security("has_role('ROLE_USER')")
      */
     public function deleteAction(Request $request, Recipe $recipe)
     {
         $form = $this->createDeleteForm($recipe);
         $form->handleRequest($request);
+
+        $em = $this->getDoctrine()->getManager();
+        $user = $em -> getRepository('AppBundle:User')->findOneByUsername(
+            $this->get('security.token_storage')->getToken()->getUser()->getUsername()
+        );
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
@@ -151,7 +171,12 @@ class RecipeController extends Controller
             $em->flush();
         }
 
-        return $this->redirectToRoute('recipe_index');
+        $this->addFlash(
+            'error',
+            'Deleted recipe'
+        );
+
+        return $this->redirectToRoute('user_show', array('id' => $user->getId()));
     }
 
     /**
@@ -225,27 +250,39 @@ class RecipeController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
-        $user = $em -> getRepository('AppBundle:User')->findOneByUsername(
-            $this->get('security.token_storage')->getToken()->getUser()->getUsername()
-        );
+        if($this->get('security.token_storage')->getToken()->getUser() == null) {
+            $user = $em->getRepository('AppBundle:User')->findOneByUsername(
+                $this->get('security.token_storage')->getToken()->getUser()->getUsername()
+            );
 
-        $recipe_check = $user -> getSharedRecipes();
+            $recipe_check = $user->getSharedRecipes();
 
-        foreach ($recipe_check as $value){
+            foreach ($recipe_check as $value) {
 
-            if($value == $recipe){
+                if ($value == $recipe) {
 
-                $showOptions = false;
+                    $showOptions = false;
+
+                }
 
             }
 
+
+            return $this->render('recipe/view.html.twig', array(
+                'options' => $showOptions,
+                'recipe' => $recipe,
+            ));
+
         }
 
+        else {
 
-        return $this->render('recipe/view.html.twig', array(
-            'options' => $showOptions,
-            'recipe' => $recipe,
-        ));
+            return $this->render('recipe/view.html.twig', array(
+                'options' => false,
+                'recipe' => $recipe,
+            ));
+
+        }
 
     }
 
@@ -254,6 +291,7 @@ class RecipeController extends Controller
      * Displays a form to edit an existing recipe entity.
      *
      * @Route("/show/view/{id}/share_recipe", name="share_recipe")
+     * @Security("has_role('ROLE_USER')")
      *
      */
     public function sharePublicRecipesAction(Request $request, Recipe $recipe)
@@ -274,7 +312,12 @@ class RecipeController extends Controller
         $em->persist($user);
         $em->flush();
 
-        return $this->redirectToRoute('public_recipes');
+        $this->addFlash(
+            'error',
+            'Saved shared recipe'
+        );
+
+        return $this->redirectToRoute('user_show', array('id' => $user->getId()));
 
     }
 
@@ -282,6 +325,7 @@ class RecipeController extends Controller
      * Displays a form to edit an existing recipe entity.
      *
      * @Route("/recipe/remove/shared/{id}", name="remove_shared_recipe")
+     * @Security("has_role('ROLE_USER')")
      *
      */
     public function removeSharedRecipesAction(Request $request, Recipe $recipe)
@@ -300,7 +344,12 @@ class RecipeController extends Controller
         $em->persist($user);
         $em->flush();
 
-        return $this->redirectToRoute('recipe_index');
+        $this->addFlash(
+            'error',
+            'Removed shared recipe'
+        );
+
+        return $this->redirectToRoute('user_show', array('id' => $user->getId()));
 
     }
 

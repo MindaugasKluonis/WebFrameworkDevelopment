@@ -23,30 +23,33 @@
 
     <h1>View Collection Page</h1>
 
-    {{ dump() }}
+    <div class="collection_view">
 
-    <table>
-        <thead>
-        <tr>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Author</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>{{ collection.title }}</td>
-            <td>{{ collection.description }}</td>
-            <td>{{ collection.author }}</td>
-        </tr>
-        </tbody>
-    </table>
+        <p>Title: {{ collection.title }}</p>
+        <p>Description: {{ collection.description }}</p>
 
-    <ul>
+
+
+    </div>
+
+    <div class="main_table">
+
+        <h2>Recipes in this collection</h2>
+
         {% for recipe in collection.recipes %}
-            <li><a href="{{ path('view_recipe', { 'id': recipe.id }) }}">{{ recipe.title }}</a></li>
+
+            <div class="recipe">
+                <a href="{{ path('view_recipe', { 'id': recipe.id }) }}">{{ recipe.title }}</a>
+
+                {% for tag in recipe.tags %}
+
+                    <span>#{{ tag.name }}</span>
+
+                {% endfor %}
+            </div>
         {% endfor %}
-    </ul>
+    </div>
+
 
     {% if options%}
         <a href="{{ path('share_collection', { 'id': collection.id }) }}">Save to your shared collections</a>

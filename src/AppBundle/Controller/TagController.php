@@ -6,7 +6,9 @@ use AppBundle\Entity\Tag;
 use AppBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 /**
  * Tag controller.
@@ -82,7 +84,12 @@ class TagController extends Controller
             $em->persist($tag);
             $em->flush();
 
-            return $this->redirectToRoute('tag_show', array('id' => $tag->getId()));
+            $this->addFlash(
+                'error',
+                'Thank you for proposing new tag'
+            );
+
+            return $this->redirectToRoute('proposed_tag');
         }
 
         return $this->render('tag/new.html.twig', array(
@@ -96,6 +103,7 @@ class TagController extends Controller
      *
      * @Route("/{id}", name="tag_show")
      * @Method("GET")
+     * @Security("has_role('ROLE_USER')")
      */
     public function showAction(Tag $tag)
     {
@@ -116,7 +124,7 @@ class TagController extends Controller
     public function editAction(Request $request, Tag $tag)
     {
         $deleteForm = $this->createDeleteForm($tag);
-        if (TRUE === $this->get('security.authorization_checker')->isGranted('ROLE_USER')){
+        if (TRUE === $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')){
 
             $editForm = $this->createForm('AppBundle\Form\TagType', $tag);
 
@@ -133,7 +141,16 @@ class TagController extends Controller
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('tag_edit', array('id' => $tag->getId()));
+            $this->addFlash(
+                'error',
+                'Edited tag'
+            );
+
+            $user = $this->getDoctrine()->getManager()->getRepository('AppBundle:User')->findOneByUsername(
+                $this->get('security.token_storage')->getToken()->getUser()->getUsername()
+            );
+
+            return $this->redirectToRoute('user_show', array('id' => $user->getId()));
         }
 
         return $this->render('tag/edit.html.twig', array(
@@ -158,6 +175,17 @@ class TagController extends Controller
             $em = $this->getDoctrine()->getManager();
             $em->remove($tag);
             $em->flush();
+
+            $this->addFlash(
+                'error',
+                'Deleted tag'
+            );
+
+            $user = $this->getDoctrine()->getManager()->getRepository('AppBundle:User')->findOneByUsername(
+                $this->get('security.token_storage')->getToken()->getUser()->getUsername()
+            );
+
+            return $this->redirectToRoute('user_show', array('id' => $user->getId()));
         }
 
         return $this->redirectToRoute('tag_index');
@@ -201,6 +229,7 @@ class TagController extends Controller
      *
      * @Route("/view/proposed/freeze/{id}", name="freeze_tag")
      * @Method("GET")
+     * @Security("has_role('ROLE_USER')")
      */
     public function reportTagAction(Tag $tag)
     {
@@ -212,6 +241,11 @@ class TagController extends Controller
 
         $em->persist($tag);
         $em->flush();
+
+        $this->addFlash(
+            'error',
+            'Tag was reported'
+        );
 
         return $this->redirectToRoute('proposed_tag');
     }
@@ -228,10 +262,26 @@ class TagController extends Controller
 
         $tag = $em->getRepository('AppBundle:Tag')->find($tag);
 
-        $tag -> setVotes($tag->getVotes() + 1);
+        if (TRUE === $this->get('security.authorization_checker')->isGranted('ROLE_USER')){
+
+            $tag -> setVotes($tag->getVotes() + 5);
+
+        }
+
+        else{
+
+            $tag -> setVotes($tag->getVotes() + 1);
+
+        }
+
 
         $em->persist($tag);
         $em->flush();
+
+        $this->addFlash(
+            'error',
+            'Thank you for your vote'
+        );
 
         return $this->redirectToRoute('proposed_tag');
     }

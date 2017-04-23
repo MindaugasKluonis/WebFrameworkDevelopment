@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -17,11 +18,24 @@ class RecipeType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        //$builder->add('title')->add('summary')->add('ingredients')->add('steps')->add('collection')->add('author')->add('tags');
-        $builder->add('title')->add('summary')->add('ingredients')->add('steps')->add('tags');
+
+        $builder->add('title');
 
         $this->var = $options['user_id'];
         $this->tagApproved = 'Approved';
+
+        $builder->add('summary', TextareaType::class, array(
+            'attr' => array('class' => ''),
+        ));
+
+        $builder->add('ingredients', TextareaType::class, array(
+            'attr' => array('class' => ''),
+        ));
+
+
+        $builder->add('steps', TextareaType::class, array(
+            'attr' => array('class' => ''),
+        ));
 
         $builder->add('collection', EntityType::class, [
 
@@ -51,14 +65,16 @@ class RecipeType extends AbstractType
             'multiple' => true,
         ]);
 
-        $builder->add('public', ChoiceType::class, array(
-            'choices' => array(
-                'Public' => 'PUBLIC',
-                'Private' => 'PRIVATE'
-            ),
-            'required'    => true,
-            'empty_data'  => null
-        ));
+        if($options['public'] != 'PUBLIC') {
+            $builder->add('public', ChoiceType::class, array(
+                'choices' => array(
+                    'Public' => 'PUBLIC',
+                    'Private' => 'PRIVATE'
+                ),
+                'required' => true,
+                'empty_data' => null
+            ));
+        }
 
     }
 
@@ -72,6 +88,7 @@ class RecipeType extends AbstractType
         $resolver->setDefaults(array(
             'data_class' => 'AppBundle\Entity\Recipe',
             'user_id' => null,
+            'public' => null
         ));
     }
 

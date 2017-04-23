@@ -5,7 +5,9 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 /**
  * User controller.
@@ -19,6 +21,7 @@ class UserController extends Controller
      *
      * @Route("/", name="user_index")
      * @Method("GET")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function indexAction()
     {
@@ -34,21 +37,30 @@ class UserController extends Controller
     /**
      * Creates a new user entity.
      *
-     * @Route("/new", name="user_new")
+     * @Route("/register", name="user_new")
      * @Method({"GET", "POST"})
      */
     public function newAction(Request $request)
     {
         $user = new User();
-        $form = $this->createForm('AppBundle\Form\UserType', $user);
+        $form = $this->createForm('AppBundle\Form\RegisterType', $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $password = $this->get('security.password_encoder')
+                ->encodePassword($user, $user->getPassword());
+            $user->setPassword($password);
+
+            $roles = ['ROLE_USER'];
+            $user -> setRoles($roles);
+            $user -> setLoggedIn('true');
+
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
 
-            return $this->redirectToRoute('user_show', array('id' => $user->getId()));
+            return $this->redirectToRoute('homepage');
         }
 
         return $this->render('user/new.html.twig', array(
@@ -78,6 +90,7 @@ class UserController extends Controller
      *
      * @Route("/{id}/edit", name="user_edit")
      * @Method({"GET", "POST"})
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function editAction(Request $request, User $user)
     {
@@ -103,6 +116,7 @@ class UserController extends Controller
      *
      * @Route("/{id}", name="user_delete")
      * @Method("DELETE")
+     * @Security("has_role('ROLE_USER')")
      */
     public function deleteAction(Request $request, User $user)
     {
@@ -135,16 +149,16 @@ class UserController extends Controller
     }
 
     /**
-     * Lists all user entities.
+     *
      *
      * @Route("/profile/show/{id}", name="user_profile")
      * @Method("GET")
+     *
      */
     public function profileAction(User $user)
     {
 
-        if($user != $this->get('security.token_storage')->getToken()->getUser()->getUsername()) {
-
+        if($this->get('security.token_storage')->getToken()->getUser() != null) {
 
             $em = $this->getDoctrine()->getManager();
 
@@ -154,11 +168,27 @@ class UserController extends Controller
                 'user' => $userProfile,
             ));
 
-        }
 
-        else {
+        } else {
 
-            return $this->redirectToRoute('user_show', array('id' => $user->getId()));
+
+
+            if ($user != $this->get('security.token_storage')->getToken()->getUser()->getUsername()) {
+
+
+                $em = $this->getDoctrine()->getManager();
+
+                $userProfile = $em->getRepository('AppBundle:User')->find($user);
+
+                return $this->render('user/profile.html.twig', array(
+                    'user' => $userProfile,
+                ));
+
+            } else {
+
+                return $this->redirectToRoute('user_show', array('id' => $user->getId()));
+
+            }
 
         }
     }

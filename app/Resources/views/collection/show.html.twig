@@ -5,35 +5,42 @@
 
     {{ dump() }}
 
-    <table>
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ collection.id }}</td>
-            </tr>
-            <tr>
-                <th>Title</th>
-                <td>{{ collection.title }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ collection.description }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="collection_view">
 
-    <ul>
+        <a style="float: right" href="{{ path('collection_edit', { 'id': collection.id }) }}">Edit</a>
+        <p>Title: {{ collection.title }}</p>
+        <p>Description: {{ collection.description }}</p>
+
+
+
+    </div>
+
+    <div class="main_table">
+
+        <h2>Recipes in this collection</h2>
+
         {% for recipe in collection.recipes %}
-            <li>{{ recipe.title }}</li>
+
+            <div class="recipe">
+                <a href="{{ path('view_recipe', { 'id': recipe.id }) }}">{{ recipe.title }}</a>
+
+                <a style="float: right" href="{{ path('recipe_edit', { 'id': recipe.id }) }}">edit</a>
+
+                <br>
+                <br>
+
+                {% for tag in recipe.tags %}
+
+                    <span>#{{ tag.name }}</span>
+
+                {% endfor %}
+            </div>
         {% endfor %}
-    </ul>
+    </div>
 
     <ul>
         <li>
             <a href="{{ path('collection_index') }}">Back to the list</a>
-        </li>
-        <li>
-            <a href="{{ path('collection_edit', { 'id': collection.id }) }}">Edit</a>
         </li>
         <li>
             {{ form_start(delete_form) }}

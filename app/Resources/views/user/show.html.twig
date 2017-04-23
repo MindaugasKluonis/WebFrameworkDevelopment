@@ -3,134 +3,92 @@
 {% block body %}
     <h1>User</h1>
 
-    <table>
-        <tbody>
-            <tr>
-                <th>Username</th>
-                <td>{{ user.username }}</td>
-            </tr>
-            <tr>
-                <th>Loggedin</th>
-                <td>{{ user.loggedIn }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <h1>{{ user.username }} Profile</h1>
 
     <h2>RECIPES</h2>
 
-    <table>
-        <thead>
-        <tr>
-            <th>Id</th>
-            <th>Title</th>
-            <th>Summary</th>
-            <th>Ingredients</th>
-            <th>Steps</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
+    {{ dump() }}
+
+    <div class="main_table">
+
         {% for recipe in user.recipes %}
-            <tr>
-                <td><a href="{{ path('recipe_show', { 'id': recipe.id }) }}">{{ recipe.id }}</a></td>
-                <td>{{ recipe.title }}</td>
-                <td>{{ recipe.summary }}</td>
-                <td>{{ recipe.ingredients }}</td>
-                <td>{{ recipe.steps }}</td>
-                <td>
-                    <ul>
-                        <li>
-                            <a href="{{ path('recipe_show', { 'id': recipe.id }) }}">show</a>
-                        </li>
-                        <li>
-                            <a href="{{ path('recipe_edit', { 'id': recipe.id }) }}">edit</a>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
+
+            <div class="recipe">
+                <a style="float: right" href="{{ path('recipe_edit', { 'id': recipe.id }) }}">Edit</a>
+                <a href="{{ path('view_recipe', { 'id': recipe.id }) }}">{{ recipe.title }}</a>
+
+                <br>
+                <br>
+
+                {% for tag in recipe.tags %}
+
+                    <span>#{{ tag.name }}</span>
+
+                {% endfor %}
+            </div>
         {% endfor %}
-        </tbody>
-    </table>
+    </div>
+
+    <a href="{{ path('recipe_new') }}">Create a new recipe</a>
+
+    <h2>Shared Recipes</h2>
+
+    <div class="main_table">
+
+        {% for recipe in user.sharedRecipes %}
+
+            <div class="recipe">
+                <a href="{{ path('view_recipe', { 'id': recipe.id }) }}">{{ recipe.title }}</a>
+
+                <a style="float: right" href="{{ path('remove_shared_recipe', { 'id': recipe.id }) }}">remove from shared </a>
+
+            </div>
+        {% endfor %}
+    </div>
 
     <h2>COLLECTIONS</h2>
 
-    <table>
-        <thead>
-        <tr>
-            <th>Id</th>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
+    <div class="main_table">
+
         {% for collection in user.collections %}
-            <tr>
-                <td><a href="{{ path('collection_show', { 'id': collection.id }) }}">{{ collection.id }}</a></td>
-                <td>{{ collection.title }}</td>
-                <td>{{ collection.description }}</td>
-                <td>
-                    <ul>
-                        <li>
-                            <a href="{{ path('collection_show', { 'id': collection.id }) }}">show</a>
-                        </li>
-                        <li>
-                            <a href="{{ path('collection_edit', { 'id': collection.id }) }}">edit</a>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
+
+            <div class="collection">
+                <a style="float: right" href="{{ path('collection_edit', { 'id': collection.id }) }}">Edit</a>
+                <a href="{{ path('view_collection', { 'id': collection.id }) }}">{{ collection.title }}</a>
+            </div>
         {% endfor %}
-        </tbody>
-    </table>
 
-    <h1>Tags list</h1>
+    </div>
 
-    <table>
-        <thead>
-        <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Status</th>
-            <th>Votes</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for tag in user.tags %}
-            <tr>
-                <td><a href="{{ path('tag_show', { 'id': tag.id }) }}">{{ tag.id }}</a></td>
-                <td>{{ tag.name }}</td>
-                <td>{{ tag.description }}</td>
-                <td>{{ tag.status }}</td>
-                <td>{{ tag.votes }}</td>
-                <td>
-                    <ul>
-                        <li>
-                            <a href="{{ path('tag_show', { 'id': tag.id }) }}">show</a>
-                        </li>
-                        <li>
-                            <a href="{{ path('tag_edit', { 'id': tag.id }) }}">edit</a>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
+    <a href="{{ path('collection_new') }}">Create a new collection</a>
+
+
+    <h2>Shared Collections</h2>
+
+    <div class="main_table">
+
+        {% for collection in user.sharedCollections %}
+
+            <div class="collection">
+                <a href="{{ path('view_collection', { 'id': collection.id }) }}">{{ collection.title }}</a>
+
+                <a style="float: right" href="{{ path('remove_shared_collection', { 'id': collection.id }) }}">remove from shared </a>
+
+            </div>
         {% endfor %}
-        </tbody>
-    </table>
+    </div>
 
-    <ul>
-        <li>
-            <a href="{{ path('user_index') }}">Back to the list</a>
-        </li>
-        <li>
-            <a href="{{ path('user_edit', { 'id': user.id }) }}">Edit</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
+    <h1>User Created tags</h1>
+
+    <div class="main_form">
+
+        <div class="tag">
+            {% for tag in user.tags %}
+
+                <span><a href="{{ path('tag_edit', { 'id': tag.id }) }}">{{ tag.name }}</a></span>
+
+            {% endfor %}
+
+        </div>
+    </div>
 {% endblock %}

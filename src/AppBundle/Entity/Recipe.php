@@ -4,11 +4,13 @@ namespace AppBundle\Entity;
 
 
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity
  * @ORM\Table(name="recipe")
+ * @ORM\HasLifecycleCallbacks
  */
 class Recipe
 {
@@ -62,13 +64,27 @@ class Recipe
     /**
      * @ORM\Column(type="string")
      */
-    private $public;
+    private $public = 'PRIVATE';
 
 
     /**
      * @ORM\ManyToMany(targetEntity="\AppBundle\Entity\Comments")
      */
     private $comments;
+
+    /**
+     * @var datetime $created
+     *
+     * @ORM\Column(type="datetime")
+     */
+    private $created;
+
+    /**
+     * @var datetime $updated
+     *
+     * @ORM\Column(type="datetime", nullable = true)
+     */
+    protected $updated;
 
 
     /**
@@ -330,5 +346,25 @@ class Recipe
     public function getComments()
     {
         return $this->comments;
+    }
+
+    /**
+     * Gets triggered only on insert
+
+     * @ORM\PrePersist
+     */
+    public function onPrePersist()
+    {
+        $this->created = new \DateTime("now");
+    }
+
+    /**
+     * Gets triggered every time on update
+
+     * @ORM\PreUpdate
+     */
+    public function onPreUpdate()
+    {
+        $this->updated = new \DateTime("now");
     }
 }

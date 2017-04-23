@@ -16,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 
 class CommentController extends Controller{
@@ -24,6 +25,7 @@ class CommentController extends Controller{
      * Lists all collection entities.
      *
      * @Route("/recipe/show/view/comment/{id}", name="comment_recipe")
+     * @Security("has_role('ROLE_USER')")
      */
     public function commentAction(Request $request, Recipe $recipe)
     {

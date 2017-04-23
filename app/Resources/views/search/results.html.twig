@@ -25,5 +25,50 @@
 
     {{ dump() }}
 
+    {% if type == 'User' %}
+        <div class="main_table">
+
+            {% for user in data %}
+
+                <div class="recipe">
+                    <a href="{{ path('user_profile', { 'id': user.id }) }}">{{ user.username }}</a>
+
+                </div>
+            {% endfor %}
+        </div>
+    {% elseif type == 'Recipe' %}
+        <div class="main_table">
+
+            {% for recipe in data %}
+
+                <div class="recipe">
+                    <a href="{{ path('view_recipe', { 'id': recipe.id }) }}">{{ recipe.title }}</a>
+
+                    <br>
+                    <br>
+
+                    {% for tag in recipe.tags %}
+
+                        <span>#{{ tag.name }}</span>
+
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    {% elseif type == 'Collection' %}
+
+        <div class="main_table">
+
+            {% for collection in data %}
+
+                <div class="collection">
+                    <a href="{{ path('view_collection', { 'id': collection.id }) }}">{{ collection.title }}</a>
+
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+
 
 {% endblock %}

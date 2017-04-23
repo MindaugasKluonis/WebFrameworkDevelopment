@@ -25,81 +25,87 @@
 
     {{ dump() }}
 
-    <table>
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Status</th>
-            <th>Votes</th>
-            <th>Author<th>
-            <th><th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for tag in tags %}
-            {% if tag.status == 'Proposed' %}
-            <tr>
-                <td>{{ tag.name }}</td>
-                <td>{{ tag.description }}</td>
-                <td>{{ tag.status }}</td>
-                <td>{{ tag.votes }}</td>
-                {% if tag.author is null %}
+        <div class="main_form">
 
-                    <td>Anonymous</td>
 
-                {% else %}
 
-                    <td><a href="{{ path('user_profile', { 'id': tag.author.id }) }}">{{ tag.author }}</a></td>
+            {% for tag in tags %}
+
+                <div class="tag">
+
+
+
+                {% if tag.status == 'Proposed' %}
+                    <a style="float: right" href="{{ path('freeze_tag', { 'id': tag.id }) }}">Report</a><br>
+                    <a style="float: right" href="{{ path('vote_tag', { 'id': tag.id }) }}">Vote for this tag</a>
+                    Name: <span>#{{ tag.name }}</span><br>
+                        Description: {{ tag.description }}<br>
+                        Current status: {{ tag.status }}<br>
+                        Current votes: {{ tag.votes }}<br>
+
+
+                        {% if tag.author is null %}
+
+                            Author: Anonymous<br>
+
+                        {% else %}
+
+                            Author: <a href="{{ path('user_profile', { 'id': tag.author.id }) }}">{{ tag.author }}</a><br>
+
+                        {% endif %}
+
+
+
+                    <hr>
 
                 {% endif %}
 
-                    <td><a href="{{ path('freeze_tag', { 'id': tag.id }) }}">Report</a></td>
-                <td><a href="{{ path('vote_tag', { 'id': tag.id }) }}">Vote this tag</a></td>
+                    </div>
+            {% endfor %}
 
-            </tr>
-            {% endif %}
-        {% endfor %}
-        </tbody>
-    </table>
+        </div>
 
-    <a href="{{ path('tag_new') }}">Create a new tag</a>
+
+    <a href="{{ path('tag_new') }}">Propose new tag</a>
 
     <h2>Approved tags</h2>
 
-    <table>
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Status</th>
-            <th>Votes</th>
-            <th>Author<th>
-        </tr>
-        </thead>
-        <tbody>
+    <div class="main_form">
+
+
+
         {% for tag in tags %}
-            {% if tag.status == 'Approved' %}
-                <tr>
-                    <td>{{ tag.name }}</td>
-                    <td>{{ tag.description }}</td>
-                    <td>{{ tag.status }}</td>
-                    <td>{{ tag.votes }}</td>
+
+            <div class="tag">
+
+                {% if tag.status == 'Approved' %}
+                    Name: <span>#{{ tag.name }}</span><br>
+                    Description: {{ tag.description }}<br>
+                    Current status: {{ tag.status }}<br>
+                    Current votes: {{ tag.votes }}<br>
+
+
                     {% if tag.author is null %}
 
-                        <td>Anonymous</td>
+                        Author: Anonymous<br>
 
                     {% else %}
 
-                        <td>{{ tag.author }}</td>
+                        Author: <a href="{{ path('user_profile', { 'id': tag.author.id }) }}">{{ tag.author }}</a><br>
 
                     {% endif %}
 
-                </tr>
-            {% endif %}
+
+
+                    <hr>
+
+                {% endif %}
+
+            </div>
         {% endfor %}
-        </tbody>
-    </table>
+
+
+    </div>
 
 
 {% endblock %}

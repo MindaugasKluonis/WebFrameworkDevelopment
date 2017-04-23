@@ -23,16 +23,17 @@
 
     <h1>Search Page</h1>
 
-    <form action="/search/results" method="POST">
-        <input type="input" name="query">
-        <select name="type">
-            <option>User</option>
-            <option>Recipe</option>
-            <option>Collection</option>
-        </select>
-        <input type="submit" value="Search">
-    </form>
-
+    <div class="main_form">
+        <form action="/search/results" method="POST">
+            <input type="input" name="query">
+            <select name="type">
+                <option>User</option>
+                <option>Recipe</option>
+                <option>Collection</option>
+            </select>
+            <input type="submit" value="Search">
+        </form>
+    </div>
     {{ dump() }}
 
 
