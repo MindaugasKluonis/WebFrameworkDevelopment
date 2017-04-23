@@ -58,10 +58,22 @@ class User implements UserInterface, \Serializable
     private $collections;
 
     /**
+     * @ORM\ManyToMany(targetEntity="\AppBundle\Entity\Collection")
+     */
+    private $sharedCollections;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="\AppBundle\Entity\Recipe")
+     */
+    private $sharedRecipes;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
+        $this->sharedRecipes = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->sharedCollections = new \Doctrine\Common\Collections\ArrayCollection();
         $this->collections = new \Doctrine\Common\Collections\ArrayCollection();
         $this->recipes = new \Doctrine\Common\Collections\ArrayCollection();
         $this->tags = new \Doctrine\Common\Collections\ArrayCollection();
@@ -164,6 +176,7 @@ class User implements UserInterface, \Serializable
     public function getPassword()
     {
         // TODO: Implement getPassword() method.
+        return $this->password;
     }
 
     /**
@@ -174,5 +187,192 @@ class User implements UserInterface, \Serializable
     public function getUsername()
     {
         // TODO: Implement getUsername() method.
+        return $this->username;
     }
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set username
+     *
+     * @param string $username
+     *
+     * @return User
+     */
+    public function setUsername($username)
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
+    /**
+     * Set password
+     *
+     * @param string $password
+     *
+     * @return User
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * Set roles
+     *
+     * @param array $roles
+     *
+     * @return User
+     */
+    public function setRoles($roles)
+    {
+        $this->roles = $roles;
+        return $this;
+    }
+
+
+
+    /**
+     * Set loggedIn
+     *
+     * @param string $loggedIn
+     *
+     * @return User
+     */
+    public function setLoggedIn($loggedIn)
+    {
+        $this->loggedIn = $loggedIn;
+
+        return $this;
+    }
+
+    /**
+     * Get loggedIn
+     *
+     * @return string
+     */
+    public function getLoggedIn()
+    {
+        return $this->loggedIn;
+    }
+
+    /**
+     * Add recipe
+     *
+     * @param \AppBundle\Entity\Recipe $recipe
+     *
+     * @return User
+     */
+    public function addRecipe(\AppBundle\Entity\Recipe $recipe)
+    {
+        $this->recipes[] = $recipe;
+
+        return $this;
+    }
+
+    /**
+     * Remove recipe
+     *
+     * @param \AppBundle\Entity\Recipe $recipe
+     */
+    public function removeRecipe(\AppBundle\Entity\Recipe $recipe)
+    {
+        $this->recipes->removeElement($recipe);
+    }
+
+    /**
+     * Get recipes
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRecipes()
+    {
+        return $this->recipes;
+    }
+
+    /**
+     * Add tag
+     *
+     * @param \AppBundle\Entity\Tag $tag
+     *
+     * @return User
+     */
+    public function addTag(\AppBundle\Entity\Tag $tag)
+    {
+        $this->tags[] = $tag;
+
+        return $this;
+    }
+
+    /**
+     * Remove tag
+     *
+     * @param \AppBundle\Entity\Tag $tag
+     */
+    public function removeTag(\AppBundle\Entity\Tag $tag)
+    {
+        $this->tags->removeElement($tag);
+    }
+
+    /**
+     * Get tags
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getTags()
+    {
+        return $this->tags;
+    }
+
+    /**
+     * Add collection
+     *
+     * @param \AppBundle\Entity\Collection $collection
+     *
+     * @return User
+     */
+    public function addCollection(\AppBundle\Entity\Collection $collection)
+    {
+        $this->collections[] = $collection;
+
+        return $this;
+    }
+
+    /**
+     * Remove collection
+     *
+     * @param \AppBundle\Entity\Collection $collection
+     */
+    public function removeCollection(\AppBundle\Entity\Collection $collection)
+    {
+        $this->collections->removeElement($collection);
+    }
+
+    /**
+     * Get collections
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCollections()
+    {
+        return $this->collections;
+    }
+
+
+    public function __toString()
+    {
+        return $this->getUsername();
+    }
+
 }

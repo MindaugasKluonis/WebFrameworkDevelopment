@@ -195,4 +195,44 @@ class TagController extends Controller
             'tags' => $tags,
         ));
     }
+
+    /**
+     * Lists all tag entities.
+     *
+     * @Route("/view/proposed/freeze/{id}", name="freeze_tag")
+     * @Method("GET")
+     */
+    public function reportTagAction(Tag $tag)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $tag = $em->getRepository('AppBundle:Tag')->find($tag);
+
+        $tag -> setStatus("Frozen");
+
+        $em->persist($tag);
+        $em->flush();
+
+        return $this->redirectToRoute('proposed_tag');
+    }
+
+    /**
+     * Lists all tag entities.
+     *
+     * @Route("/view/proposed/vote/{id}", name="vote_tag")
+     * @Method("GET")
+     */
+    public function voteTagAction(Tag $tag)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $tag = $em->getRepository('AppBundle:Tag')->find($tag);
+
+        $tag -> setVotes($tag->getVotes() + 1);
+
+        $em->persist($tag);
+        $em->flush();
+
+        return $this->redirectToRoute('proposed_tag');
+    }
 }

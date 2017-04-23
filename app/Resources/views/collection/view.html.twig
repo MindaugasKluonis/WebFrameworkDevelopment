@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block pageTitle %}Home Page{% endblock %}
+
+{% block body %}
+
+    {% for flash_message in app.session.flashBag.get('error') %}
+        <div class="flash-error">
+            {{ flash_message }}
+        </div>
+    {% endfor %}
+
+
+    {% if app.user is not null %}
+        {{ app.user.username }}
+    {% endif %}
+
+    {% if is_granted('ROLE_ADMIN') %}
+
+        HELLO ADMIN :)
+
+    {% endif %}
+
+    <h1>View Collection Page</h1>
+
+    {{ dump() }}
+
+    <table>
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Author</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>{{ collection.title }}</td>
+            <td>{{ collection.description }}</td>
+            <td>{{ collection.author }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        {% for recipe in collection.recipes %}
+            <li><a href="{{ path('view_recipe', { 'id': recipe.id }) }}">{{ recipe.title }}</a></li>
+        {% endfor %}
+    </ul>
+
+    {% if options%}
+        <a href="{{ path('share_collection', { 'id': collection.id }) }}">Save to your shared collections</a>
+    {% else %}
+        Already in your stored collections
+    {% endif %}
+
+{% endblock %}

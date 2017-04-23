@@ -38,4 +38,27 @@
             <a href="{{ path('collection_new') }}">Create a new collection</a>
         </li>
     </ul>
+
+    <h2>Shared Collections</h2>
+
+    <table>
+        {% for collection in shared_collections %}
+            <tr>
+                <td><a href="{{ path('view_collection', { 'id': collection.id }) }}">{{ collection.id }}</a></td>
+                <td>{{ collection.title }}</td>
+                <td>{{ collection.description }}</td>
+                <td>{{ collection.author }}</td>
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('view_collection', { 'id': collection.id }) }}">show</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('remove_shared_collection', { 'id': collection.id }) }}">remove from shared </a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
 {% endblock %}

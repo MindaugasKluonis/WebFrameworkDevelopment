@@ -3,6 +3,8 @@
 {% block body %}
     <h1>Recipes list</h1>
 
+    {{ dump() }}
+
     <table>
         <thead>
             <tr>
@@ -42,4 +44,28 @@
             <a href="{{ path('recipe_new') }}">Create a new recipe</a>
         </li>
     </ul>
+
+    <h2>Shared recipes</h2>
+
+    <table>
+    {% for recipe in shared_recipes %}
+        <tr>
+            <td><a href="{{ path('view_recipe', { 'id': recipe.id }) }}">{{ recipe.id }}</a></td>
+            <td>{{ recipe.title }}</td>
+            <td>{{ recipe.summary }}</td>
+            <td>{{ recipe.ingredients }}</td>
+            <td>{{ recipe.steps }}</td>
+            <td>
+                <ul>
+                    <li>
+                        <a href="{{ path('view_recipe', { 'id': recipe.id }) }}">show</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('remove_shared_recipe', { 'id': recipe.id }) }}">remove from shared </a>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
 {% endblock %}

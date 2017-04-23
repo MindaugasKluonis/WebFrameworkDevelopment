@@ -58,10 +58,22 @@ class User implements UserInterface, \Serializable
     private $collections;
 
     /**
+     * @ORM\ManyToMany(targetEntity="\AppBundle\Entity\Collection")
+     */
+    private $sharedCollections;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="\AppBundle\Entity\Recipe")
+     */
+    private $sharedRecipes;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
+        $this->sharedRecipes = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->sharedCollections = new \Doctrine\Common\Collections\ArrayCollection();
         $this->collections = new \Doctrine\Common\Collections\ArrayCollection();
         $this->recipes = new \Doctrine\Common\Collections\ArrayCollection();
         $this->tags = new \Doctrine\Common\Collections\ArrayCollection();
@@ -363,4 +375,72 @@ class User implements UserInterface, \Serializable
         return $this->getUsername();
     }
 
+
+    /**
+     * Add sharedCollection
+     *
+     * @param \AppBundle\Entity\Collection $sharedCollection
+     *
+     * @return User
+     */
+    public function addSharedCollection(\AppBundle\Entity\Collection $sharedCollection)
+    {
+        $this->sharedCollections[] = $sharedCollection;
+
+        return $this;
+    }
+
+    /**
+     * Remove sharedCollection
+     *
+     * @param \AppBundle\Entity\Collection $sharedCollection
+     */
+    public function removeSharedCollection(\AppBundle\Entity\Collection $sharedCollection)
+    {
+        $this->sharedCollections->removeElement($sharedCollection);
+    }
+
+    /**
+     * Get sharedCollections
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getSharedCollections()
+    {
+        return $this->sharedCollections;
+    }
+
+    /**
+     * Add sharedRecipe
+     *
+     * @param \AppBundle\Entity\Recipe $sharedRecipe
+     *
+     * @return User
+     */
+    public function addSharedRecipe(\AppBundle\Entity\Recipe $sharedRecipe)
+    {
+        $this->sharedRecipes[] = $sharedRecipe;
+
+        return $this;
+    }
+
+    /**
+     * Remove sharedRecipe
+     *
+     * @param \AppBundle\Entity\Recipe $sharedRecipe
+     */
+    public function removeSharedRecipe(\AppBundle\Entity\Recipe $sharedRecipe)
+    {
+        $this->sharedRecipes->removeElement($sharedRecipe);
+    }
+
+    /**
+     * Get sharedRecipes
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getSharedRecipes()
+    {
+        return $this->sharedRecipes;
+    }
 }

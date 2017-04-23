@@ -12,7 +12,7 @@
 
 
     {% if app.user is not null %}
-        {{ app.user.username }}
+        {{ recipe.author.id }}
     {% endif %}
 
     {% if is_granted('ROLE_ADMIN') %}
@@ -34,6 +34,7 @@
             <th>Steps</th>
             <th>Author</th>
             <th>Collection</th>
+            <th>Tags</th>
         </tr>
         </thead>
         <tbody>
@@ -44,9 +45,48 @@
                 <td>{{ recipe.steps }}</td>
                 <td>{{ recipe.author }}</td>
                 <td>{{ recipe.collection }}</td>
+                <td>
+                    <ul>
+                        {% for tag in recipe.tags %}
+
+                            <li>{{ tag.name }} </li>
+
+                        {% endfor %}
+                    </ul>
+                </td>
             </tr>
         </tbody>
     </table>
+
+    {% if options%}
+
+        {% if app.user.id != recipe.author.id %}
+
+            <a href="{{ path('share_recipe', { 'id': recipe.id }) }}">Save to your shared recipes</a>
+
+        {% else %}
+
+            Already in your collection
+
+        {% endif %}
+    {% else %}
+
+        Already in your collection
+
+    {% endif %}
+
+
+    {% for comment in recipe.comments %}
+
+        <p>{{ comment.author }}: {{ comment.content }}</p>
+        <hr>
+
+    {% endfor %}
+
+    <form action="comment/{{ recipe.id }}" method="POST">
+        <input type="input" name="comment">
+        <input type="submit" value="Submit">
+    </form>
 
 
 {% endblock %}

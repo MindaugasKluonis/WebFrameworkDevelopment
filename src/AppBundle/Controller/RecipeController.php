@@ -34,9 +34,11 @@ class RecipeController extends Controller
         );
 
         $recipes = $em->getRepository('AppBundle:Recipe')->findByAuthor($user);
+        $sharedRecipes = $user -> getSharedRecipes();
 
         return $this->render('recipe/index.html.twig', array(
             'recipes' => $recipes,
+            'shared_recipes' => $sharedRecipes
         ));
     }
 
@@ -217,10 +219,88 @@ class RecipeController extends Controller
     public function viewPublicRecipesAction(Request $request, Recipe $recipe)
     {
 
+        $showOptions = true;
+
+        $user = new User();
+
+        $em = $this->getDoctrine()->getManager();
+
+        $user = $em -> getRepository('AppBundle:User')->findOneByUsername(
+            $this->get('security.token_storage')->getToken()->getUser()->getUsername()
+        );
+
+        $recipe_check = $user -> getSharedRecipes();
+
+        foreach ($recipe_check as $value){
+
+            if($value == $recipe){
+
+                $showOptions = false;
+
+            }
+
+        }
+
 
         return $this->render('recipe/view.html.twig', array(
+            'options' => $showOptions,
             'recipe' => $recipe,
         ));
+
+    }
+
+
+    /**
+     * Displays a form to edit an existing recipe entity.
+     *
+     * @Route("/show/view/{id}/share_recipe", name="share_recipe")
+     *
+     */
+    public function sharePublicRecipesAction(Request $request, Recipe $recipe)
+    {
+
+        $user = new User();
+
+        $em = $this->getDoctrine()->getManager();
+
+        $user = $em -> getRepository('AppBundle:User')->findOneByUsername(
+            $this->get('security.token_storage')->getToken()->getUser()->getUsername()
+        );
+
+        $sharedRecipe = $em -> getRepository('AppBundle:Recipe')->find($recipe);
+
+        $user -> addSharedRecipe($sharedRecipe);
+
+        $em->persist($user);
+        $em->flush();
+
+        return $this->redirectToRoute('public_recipes');
+
+    }
+
+    /**
+     * Displays a form to edit an existing recipe entity.
+     *
+     * @Route("/recipe/remove/shared/{id}", name="remove_shared_recipe")
+     *
+     */
+    public function removeSharedRecipesAction(Request $request, Recipe $recipe)
+    {
+
+        $user = new User();
+
+        $em = $this->getDoctrine()->getManager();
+
+        $user = $em -> getRepository('AppBundle:User')->findOneByUsername(
+            $this->get('security.token_storage')->getToken()->getUser()->getUsername()
+        );
+
+        $user -> removeSharedRecipe($recipe);
+
+        $em->persist($user);
+        $em->flush();
+
+        return $this->redirectToRoute('recipe_index');
 
     }
 

@@ -133,4 +133,33 @@ class UserController extends Controller
             ->getForm()
         ;
     }
+
+    /**
+     * Lists all user entities.
+     *
+     * @Route("/profile/show/{id}", name="user_profile")
+     * @Method("GET")
+     */
+    public function profileAction(User $user)
+    {
+
+        if($user != $this->get('security.token_storage')->getToken()->getUser()->getUsername()) {
+
+
+            $em = $this->getDoctrine()->getManager();
+
+            $userProfile = $em->getRepository('AppBundle:User')->find($user);
+
+            return $this->render('user/profile.html.twig', array(
+                'user' => $userProfile,
+            ));
+
+        }
+
+        else {
+
+            return $this->redirectToRoute('user_show', array('id' => $user->getId()));
+
+        }
+    }
 }

@@ -33,10 +33,12 @@
             <th>Status</th>
             <th>Votes</th>
             <th>Author<th>
+            <th><th>
         </tr>
         </thead>
         <tbody>
         {% for tag in tags %}
+            {% if tag.status == 'Proposed' %}
             <tr>
                 <td>{{ tag.name }}</td>
                 <td>{{ tag.description }}</td>
@@ -48,16 +50,56 @@
 
                 {% else %}
 
-                    <td>{{ tag.author }}</td>
+                    <td><a href="{{ path('user_profile', { 'id': tag.author.id }) }}">{{ tag.author }}</a></td>
 
                 {% endif %}
 
+                    <td><a href="{{ path('freeze_tag', { 'id': tag.id }) }}">Report</a></td>
+                <td><a href="{{ path('vote_tag', { 'id': tag.id }) }}">Vote this tag</a></td>
+
             </tr>
+            {% endif %}
         {% endfor %}
         </tbody>
     </table>
 
     <a href="{{ path('tag_new') }}">Create a new tag</a>
+
+    <h2>Approved tags</h2>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Votes</th>
+            <th>Author<th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for tag in tags %}
+            {% if tag.status == 'Approved' %}
+                <tr>
+                    <td>{{ tag.name }}</td>
+                    <td>{{ tag.description }}</td>
+                    <td>{{ tag.status }}</td>
+                    <td>{{ tag.votes }}</td>
+                    {% if tag.author is null %}
+
+                        <td>Anonymous</td>
+
+                    {% else %}
+
+                        <td>{{ tag.author }}</td>
+
+                    {% endif %}
+
+                </tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
 
 
 {% endblock %}

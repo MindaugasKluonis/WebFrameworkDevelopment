@@ -66,6 +66,12 @@ class Recipe
 
 
     /**
+     * @ORM\ManyToMany(targetEntity="\AppBundle\Entity\Comments")
+     */
+    private $comments;
+
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -290,5 +296,39 @@ class Recipe
     public function getPublic()
     {
         return $this->public;
+    }
+
+    /**
+     * Add comment
+     *
+     * @param \AppBundle\Entity\Comments $comment
+     *
+     * @return Recipe
+     */
+    public function addComment(\AppBundle\Entity\Comments $comment)
+    {
+        $this->comments[] = $comment;
+
+        return $this;
+    }
+
+    /**
+     * Remove comment
+     *
+     * @param \AppBundle\Entity\Comments $comment
+     */
+    public function removeComment(\AppBundle\Entity\Comments $comment)
+    {
+        $this->comments->removeElement($comment);
+    }
+
+    /**
+     * Get comments
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getComments()
+    {
+        return $this->comments;
     }
 }

@@ -43,6 +43,11 @@ class Collection
     private $recipes;
 
     /**
+     * @ORM\Column(type="string")
+     */
+    private $public;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -172,5 +177,29 @@ class Collection
     {
         // TODO: Implement __toString() method.
         return $this -> getTitle();
+    }
+
+    /**
+     * Set public
+     *
+     * @param string $public
+     *
+     * @return Collection
+     */
+    public function setPublic($public)
+    {
+        $this->public = $public;
+
+        return $this;
+    }
+
+    /**
+     * Get public
+     *
+     * @return string
+     */
+    public function getPublic()
+    {
+        return $this->public;
     }
 }

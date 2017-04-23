@@ -6,7 +6,8 @@ use AppBundle\Entity\Collection;
 use AppBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Collection controller.
@@ -32,9 +33,11 @@ class CollectionController extends Controller
         );
 
         $collections = $em->getRepository('AppBundle:Collection')->findByAuthor($user);
+        $sharedCollections = $user -> getSharedCollections();
 
         return $this->render('collection/index.html.twig', array(
             'collections' => $collections,
+            'shared_collections' => $sharedCollections
         ));
     }
 
@@ -148,6 +151,139 @@ class CollectionController extends Controller
             ->setMethod('DELETE')
             ->getForm()
         ;
+    }
+
+    /**
+     * Displays a form to edit an existing recipe entity.
+     *
+     * @Route("/show/all", name="public_collections")
+     *
+     */
+    public function showPublicCollectionsAction(Request $request)
+    {
+
+        $em = $this->getDoctrine()->getManager();
+
+
+        $collections = $em->getRepository('AppBundle:Collection')->findAll();
+
+        $collections = $this -> getPublicCollections($collections);
+
+
+        return $this->render('collection/publicCollections.html.twig', array(
+            'collections' => $collections
+        ));
+
+    }
+
+    public function getPublicCollections($collections){
+
+        $filtered = array();
+
+        foreach ($collections as $value) {
+            if($value -> getPublic() == 'PUBLIC'){
+
+                $filtered[] = $value;
+
+            }
+        }
+
+        return $filtered;
+
+
+    }
+
+    /**
+     * Displays a form to edit an existing recipe entity.
+     *
+     * @Route("/show/view/{id}", name="view_collection")
+     *
+     */
+    public function viewPublicRecipesAction(Request $request, Collection $collection)
+    {
+
+        $showOptions = true;
+
+        $user = new User();
+
+        $em = $this->getDoctrine()->getManager();
+
+        $user = $em -> getRepository('AppBundle:User')->findOneByUsername(
+            $this->get('security.token_storage')->getToken()->getUser()->getUsername()
+        );
+
+        $collection_check = $user -> getSharedCollections();
+
+        foreach ($collection_check as $value){
+
+            if($value == $collection){
+
+                $showOptions = false;
+
+            }
+
+        }
+
+
+        return $this->render('collection/view.html.twig', array(
+            'options' => $showOptions,
+            'collection' => $collection,
+        ));
+
+    }
+
+    /**
+     * Displays a form to edit an existing recipe entity.
+     *
+     * @Route("/show/view/{id}/share_collection", name="share_collection")
+     *
+     */
+    public function sharePublicCollectionAction(Request $request, Collection $collection)
+    {
+
+        $user = new User();
+
+        $em = $this->getDoctrine()->getManager();
+
+        $user = $em -> getRepository('AppBundle:User')->findOneByUsername(
+            $this->get('security.token_storage')->getToken()->getUser()->getUsername()
+        );
+
+        $sharedCollection = $em -> getRepository('AppBundle:Collection')->find($collection);
+
+        $user -> addSharedCollection($sharedCollection);
+
+        $em->persist($user);
+        $em->flush();
+
+        return $this->redirectToRoute('public_collections');
+
+    }
+
+    /**
+     * Displays a form to edit an existing recipe entity.
+     *
+     * @Route("/collection/remove/shared/{id}", name="remove_shared_collection")
+     *
+     */
+    public function removeSharedCollectionAction(Request $request, Collection $collection)
+    {
+
+        $user = new User();
+
+        $em = $this->getDoctrine()->getManager();
+
+        $user = $em -> getRepository('AppBundle:User')->findOneByUsername(
+            $this->get('security.token_storage')->getToken()->getUser()->getUsername()
+        );
+
+        $user -> removeSharedCollection($collection);
+
+        $em->persist($user);
+        $em->flush();
+
+        return $this->redirectToRoute('collection_index');
+
     }
 
 
