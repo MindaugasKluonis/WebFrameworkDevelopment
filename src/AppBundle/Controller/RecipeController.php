@@ -250,7 +250,7 @@ class RecipeController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
-        if($this->get('security.token_storage')->getToken()->getUser() == null) {
+        if($this->get('security.token_storage')->getToken()->getUser() != 'anon.') {
             $user = $em->getRepository('AppBundle:User')->findOneByUsername(
                 $this->get('security.token_storage')->getToken()->getUser()->getUsername()
             );

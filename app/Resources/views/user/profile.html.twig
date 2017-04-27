@@ -9,18 +9,20 @@
 
         {% for recipe in user.recipes %}
 
-            <div class="recipe">
-                <a href="{{ path('view_recipe', { 'id': recipe.id }) }}">{{ recipe.title }}</a>
+            {% if recipe.public == 'PUBLIC' %}
+                <div class="recipe">
+                    <a href="{{ path('view_recipe', { 'id': recipe.id }) }}">{{ recipe.title }}</a>
 
-                <br>
-                <br>
+                    <br>
+                    <br>
 
-                {% for tag in recipe.tags %}
+                    {% for tag in recipe.tags %}
 
-                    <span>#{{ tag.name }}</span>
+                        <span>#{{ tag.name }}</span>
 
-                {% endfor %}
-            </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
         {% endfor %}
     </div>
 
@@ -30,9 +32,11 @@
 
         {% for collection in user.collections %}
 
-            <div class="collection">
-                <a href="{{ path('view_collection', { 'id': collection.id }) }}">{{ collection.title }}</a>
-            </div>
+            {% if collection.public == 'PUBLIC' %}
+                <div class="collection">
+                    <a href="{{ path('view_collection', { 'id': collection.id }) }}">{{ collection.title }}</a>
+                </div>
+            {% endif %}
         {% endfor %}
 
         <a href="{{ path('collection_new') }}">Create a new collection</a>
